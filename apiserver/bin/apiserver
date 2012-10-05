@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+var server = require('../apiserver');
+var manifest = require('../../package.json');
+
+var fs = require('fs');
+var path = require('path');
+
+var port = process.env.PORT || 10000;
+var serverOptions = { 
+  port: port,
+  s3key: process.env['S3_KEY'],
+  s3secret: process.env['S3_SECRET']
+};
+
+console.log("Starting openruko v" + manifest.version + " on port " + port);
+
+var app = server.createServer(serverOptions);
+app.start();
+
+process.on('SIGTERM', function() {
+  console.log('sigterm received. shutting down server');
+  app.stop();
+});
+

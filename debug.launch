@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+# put overriding env vars in local.env - do not save in git
+if [ -f local.env ]; then
+  source local.env
+fi
+# example boot script
+
+export S3_KEY=${S3_KEY-:AAAAAAAAAA}
+export S3_SECRET=${S3_SECRET-:BBBBBBBBBB}
+
+export PGHOST=${PGHOST:-localhost}
+export PGDATABASE=${PGDATABASE:-openruko}
+export PGUSER=${PGUSER:-openruko}
+export PGPASSWORD=${PGPASSWORD:-openruko}
+export OPENRUKO_PGSCHEMA=openruko_api
+
+export PORT=${PORT:-5000}
+export BASE_HOST=${BASE_HOST:-http}
+export BASE_PROTOCOL=${BASE_PROTOCOL:-localhost:5000}
+export S3_BUCKET=${S3_BUCKET:-openrukorepos}
+
+exec apiserver/bin/apiserver
