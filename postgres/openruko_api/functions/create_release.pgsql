@@ -39,14 +39,8 @@ BEGIN
       app_id = p_app_id AND
       instance_type NOT IN (SELECT * FROM unnest(akeys(p_pstable)));
 
-  INSERT INTO job (job_name, job_payload)
-    SELECT 'kill_dyno_instance' AS job_name, row_to_json(instances.*)
-    AS job_payload FROM 
-    (SELECT * FROM bad_instances) instances;
-
   UPDATE instance SET retired = false WHERE id IN 
       (SELECT id FROM bad_instances);
-
   
   v_required_instances = ARRAY(SELECT * FROM unnest(akeys(p_pstable)) proc_type
         WHERE proc_type NOT IN (SELECT instance_type FROM boss_instance
