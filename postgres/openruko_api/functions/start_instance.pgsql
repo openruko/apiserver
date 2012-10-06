@@ -24,7 +24,7 @@ BEGIN
     RAISE EXCEPTION  'hit with inst  searching: %, needles: %', p_instance_id, v_c;
   END IF;
 
-  v_bucket = (SELECT value FROM settings WHERE key = 's3bucket');
+  v_bucket = '{{S3_BUCKET}}';
   v_release = get_current_release(v_instance.app_id);
 
   v_dyno_id = generate_uuid();
