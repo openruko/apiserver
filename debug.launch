@@ -18,8 +18,8 @@ export PGPASSWORD=${PGPASSWORD:-openruko}
 export OPENRUKO_PGSCHEMA=openruko_api
 
 export PORT=${PORT:-5000}
-export BASE_HOST=${BASE_HOST:-http}
-export BASE_PROTOCOL=${BASE_PROTOCOL:-localhost:5000}
+export BASE_HOST=${BASE_HOST:-localhost:5000}
+export BASE_PROTOCOL=${BASE_PROTOCOL:-http}
 export S3_BUCKET=${S3_BUCKET:-openrukorepos}
 
 exec apiserver/bin/apiserver
