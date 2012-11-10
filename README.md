@@ -70,11 +70,17 @@ make certs
 
 ## Environment Variables
 
+Other environment variables could be configured but the following ones are required.
+
 Edit your ~/.bashrc and add the following lines:
 ```
 export API_SERVER_KEY=$WHAT_WAS_WRITTEN_AT_THE_END_OF_POSTGRES_SETUP
 export PGUSER=$YOUR_LOGIN_NAME
+export S3_KEY=$YOUR_AMAZON_S3_KEY
+export S3_SECRET=$YOUR_AMAZON_S3_SECRET
+export S3_BUCKET=$YOUR_AMAZON_S3_BUCKET
 ```
+
 
 apiserver/bin/apiserver will check for the presence of several environment variables,
 these must be configured as part of the process start - e.g. configured in 
