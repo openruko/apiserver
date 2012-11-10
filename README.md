@@ -23,6 +23,7 @@ https://help.ubuntu.com/community/PostgreSQL
 ```
 apt-get install postgresql postgresql-client
 apt-get install postgresql-contrib-9.1 # required for pycrypto hstore etc..
+apt-get install python-software-properties # required by add-apt-repository
 ```
 
 Node.js 0.8.x is not available in available Ubuntu repositories, however Ric Harvey
@@ -30,7 +31,7 @@ provides a PPA that works very well, following the instructions onsite adding th
 relevant lines to /etc/apt/sources.list
 
 ```
-add-apt-reposiotry ppa:richarvey/nodejs
+add-apt-repository ppa:richarvey/nodejs
 apt-get update
 apt-get install nodejs npm libssl0.9.8
 ```
