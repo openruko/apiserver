@@ -21,8 +21,9 @@ https://help.ubuntu.com/community/PostgreSQL
 (after installing, createdb root is handy)
 
 ```
-apt-get install postgresql postgresql-client
+apt-get install postgresql postgresql-client postgresql-server-dev-9.1
 apt-get install postgresql-contrib-9.1 # required for pycrypto hstore etc..
+apt-get install uuid-dev # required by node-uuid 
 ```
 
 Node.js 0.8.x is not available in available Ubuntu repositories, however Chris Lea
@@ -49,27 +50,17 @@ Install node.js dependencies:
 make init
 ```
 
+Create an ssh key
+```
+ssh-keygen -t rsa
+```
+
 Create database (apologises for the robustness of the db boostrap script)
 ```
+createuser -s -U postgres --interactive
+# enter your login name
 cd postgres
 ./setup
-```
-
-You'll additionally need to create a postgres user/pass and grant perms for db
-and to openruko_api and openruko_data schema, add these details and credentials 
-to the environment variables to launch apiserver, see ./debug.launch for example.
-
-Example (not recommended on an open server for obvious security reasons):
-
-```
-CREATE USER openruko WITH PASSWORD 'openruko'
-GRANT ALL PRIVILEGES ON DATABASE openruko to openruko;
-GRANT usage ON SCHEMA openruko_api to openruko;
-GRANT usage ON SCHEMA openruko_data to openruko;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA openruko_data TO openruko;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA openruko_data TO openruko;
-GRANT SELECT ON openruko_api.boss_instance TO openruko;
-GRANT SELECT ON openruko_api.current_release TO openruko;
 ```
 
 Create certs for the rendezvous endpoint (tls):
@@ -77,8 +68,19 @@ Create certs for the rendezvous endpoint (tls):
 make certs
 ```
 
-
 ## Environment Variables
+
+Other environment variables could be configured but the following ones are required.
+
+Edit your ~/.bashrc and add the following lines:
+```
+export API_SERVER_KEY=$WHAT_WAS_WRITTEN_AT_THE_END_OF_POSTGRES_SETUP
+export PGUSER=$YOUR_LOGIN_NAME
+export S3_KEY=$YOUR_AMAZON_S3_KEY
+export S3_SECRET=$YOUR_AMAZON_S3_SECRET
+export S3_BUCKET=$YOUR_AMAZON_S3_BUCKET
+```
+
 
 apiserver/bin/apiserver will check for the presence of several environment variables,
 these must be configured as part of the process start - e.g. configured in 
