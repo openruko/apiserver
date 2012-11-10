@@ -30,7 +30,7 @@ BEGIN
     RAISE EXCEPTION 'Name is aleady taken.';
   END IF;
 
-  v_base_domain := COALESCE((SELECT value FROM settings WHERE key='base_domain'),'openruko.com');
+  v_base_domain := COALESCE((SELECT value FROM settings WHERE key='base_domain'),'mymachine.me');
   v_web_url := 'http://'::text || p_name::text || '.'::text || v_base_domain::text || '/';
   v_git_url := 'git@'::text || v_base_domain::text || ':'::text || p_name::text || '.git'::text;
 
