@@ -57,7 +57,7 @@ ssh-keygen -t rsa
 
 Create database (apologises for the robustness of the db boostrap script)
 ```
-createuser -s -U postgres --interactive
+sudo -u postgres createuser -s -U postgres
 # enter your login name
 cd postgres
 ./setup
