@@ -61,6 +61,7 @@ sudo -u postgres createuser -s -U postgres
 # enter your login name
 cd postgres
 ./setup
+cd ..
 ```
 
 Create certs for the rendezvous endpoint (tls):
