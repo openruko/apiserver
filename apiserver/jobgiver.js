@@ -4,6 +4,7 @@ var _ = require('underscore');
 var async = require('async');
 var hstore = require('node-postgres-hstore');
 var slugSigner = require('./s3url');
+var _ = require('underscore');
 
 tasks = {};
 
@@ -37,7 +38,11 @@ module.exports =  function(app, options) {
       tasks.distributeTasksOutstanding.bind(ctx),
       tasks.markJobsDistributed.bind(ctx),
       tasks.waitPeriod.bind(ctx)
-    ], cb);
+    ], function(err){
+      if(err) console.error(err);
+      cb(err);
+    });
+
   };
 
   var processQueue = async.queue(handleJobDispersion, 1);
@@ -100,12 +105,15 @@ tasks.populateJobsOutstanding = function(callback) {
       row.mounts = hstore.parse(row.mounts) || {};
 
       //sign slug urls
-      Object.keys(row.mounts).forEach(function(mountKey) {
-        row.mounts[mountKey] = processMount(row.mounts[mountKey]);
+      _(row.mounts).forEach(function(mountValue, mountKey){
+        if(!mountValue) return callback(new Error('Mount key ' + mountKey + ' does not have value'));
+        row.mounts[mountKey] = processMount(mountValue);
       });
-      Object.keys(row.env_vars).forEach(function(mountKey) {
-        row.env_vars[mountKey] = processMount(row.env_vars[mountKey]);
-      });
+
+      _(row.env_vars).forEach(function(mountValue, mountKey){
+        if(!mountValue) return callback(new Error('Mount key ' + mountKey + ' does not have value'));
+        row.env_vars[mountKey] = processMount(mountValue);
+     });
 
       self.jobsOutstanding.provision.push(row);
     });
