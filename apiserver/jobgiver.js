@@ -5,6 +5,7 @@ var async = require('async');
 var hstore = require('node-postgres-hstore');
 var slugSigner = require('./s3url');
 var _ = require('underscore');
+var conf = require('./conf');
 
 tasks = {};
 
@@ -69,15 +70,15 @@ module.exports =  function(app, options) {
 };
 
 
-var signer = slugSigner.createSigner(process.env.S3_BUCKET);
+var signer = slugSigner.createSigner(conf.s3.bucket);
 
 var s3regex = new RegExp("^s3([a-z]*)://([a-zA-Z0-9-]*)(/([a-zA-Z0-9.-_]*))+$",'i');
 
 var processMount = function(mountUrl) {
 
-  mountUrl = mountUrl.replace('{{S3_BUCKET}}', process.env.S3_BUCKET);
-  mountUrl = mountUrl.replace('{{BASE_PROTOCOL}}', process.env.BASE_PROTOCOL);
-  mountUrl = mountUrl.replace('{{BASE_HOST}}', process.env.BASE_HOST);
+  mountUrl = mountUrl.replace('{{S3_BUCKET}}', conf.s3.bucket);
+  mountUrl = mountUrl.replace('{{BASE_PROTOCOL}}', conf.apiserver.protocol);
+  mountUrl = mountUrl.replace('{{BASE_HOST}}', conf.apiserver.hostname + ':' + conf.apiserver.port);
   
   var s3match = mountUrl.match(s3regex);
 

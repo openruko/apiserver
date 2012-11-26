@@ -2,15 +2,16 @@
 
 var server = require('../apiserver');
 var manifest = require('../../package.json');
+var conf = require('../conf')
 
 var fs = require('fs');
 var path = require('path');
 
-var port = process.env.PORT || 10000;
-var serverOptions = { 
+var port = conf.apiserver.port;
+var serverOptions = {
   port: port,
-  s3key: process.env['S3_KEY'],
-  s3secret: process.env['S3_SECRET']
+  s3key: conf.s3.key,
+  s3secret: conf.s3.secret
 };
 
 console.log("Starting openruko v" + manifest.version + " on port " + port);

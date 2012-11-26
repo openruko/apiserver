@@ -5,6 +5,7 @@ var db = require('../apidb');
 var dbfacade= require('../dbfacade')(db);
 var async = require('async');
 var yaml = require('js-yaml');
+var conf = require('../conf');
 
 module.exports = {
   lookupUserByPublicKey: {
@@ -93,6 +94,8 @@ module.exports = {
     method: 'POST',
     okayCode: 200
   },
+
+  // TODO is it used ?
   getAppMetadata: {
     routePath : '/internal/:appName/metadata',
     payloadSource: 'query',
@@ -106,8 +109,8 @@ module.exports = {
       var realResponse = this.responsePayload = {};
 
 
-      var repoSigner = s3url.createSigner(process.env['S3_REPOS_BUCKET']);
-      var slugSigner = s3url.createSigner(process.env['S3_SLUGS_BUCKET']);
+      var repoSigner = s3url.createSigner(conf.s3.reposBucket);
+      var slugSigner = s3url.createSigner(conf.s3.slugsBucket);
 
       realResponse.slug_put_url = slugSigner(dbResponse.app_id + uuid.v4() + '.tgz');
       realResponse.repo_put_url = repoSigner(dbResponse.app_id + '.tgz');

@@ -72,32 +72,29 @@ make certs
 
 ## Environment Variables
 
-Other environment variables could be configured but the following ones are required.
-
-Edit your ~/.bashrc and add the following lines:
-```
-export API_SERVER_KEY=$WHAT_WAS_WRITTEN_AT_THE_END_OF_POSTGRES_SETUP
-export PGUSER=$YOUR_LOGIN_NAME
-export S3_KEY=$YOUR_AMAZON_S3_KEY
-export S3_SECRET=$YOUR_AMAZON_S3_SECRET
-export S3_BUCKET=$YOUR_AMAZON_S3_BUCKET
-```
-
-
 apiserver/bin/apiserver will check for the presence of several environment variables,
 these must be configured as part of the process start - e.g. configured in 
-supervisord or as part of boot script see ./debug.launch for example
+supervisord or as part of boot script see ./apiserver/conf.js
 
-* BASE_HOST - base host of the API server (e.g. localhost:5000)
-* BASE_PROTOCOL- base protocl of the API server (e.g. http)
-* PORT - TCP port to bind server to (<1024 require superuser privileges)
-* PRIVATE_KEY - Path to private key in pem format (can be relative to project root)
-* PUBLIC_KEY - Path to public key in pem format (can be relative to project root)
-* S3_KEY - Your AWS S3 key for the repo and slug bucket
-* S3_SECRET - Your AWS S3 secret for the repo and slug bucket
-* S3_BUCKET - Name of S3 bucket to store slugs and repos
+* PG_USER - Your login name, unless you set something else.
+* S3_KEY - You need an Amazon S3 account to store repos and slug archive
+* S3_SECRET - You need an Amazon S3 account to store repos and slug archive
+* S3_BUCKET - You need an Amazon S3 account to store repos and slug archive
 
-## Help and Todo 
+## Launch
+
+```
+$ cat > .env << EOF
+PG_USER=$YOUR_LOGIN_NAME
+S3_KEY=$YOUR_AMAZON_S3_KEY
+S3_SECRET=$YOUR_AMAZON_S3_SECRET
+S3_BUCKET=$YOUR_AMAZON_S3_BUCKET
+EOF
+
+foreman start
+```
+
+## Help and Todo
 
 Loads to do on this part, not limited to:
 

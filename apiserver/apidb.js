@@ -1,12 +1,6 @@
 var pg = require('pg');
+var conf = require('./conf');
 
-var pgConfig = {
-  'database' : process.env['PGDATABASE'] || 'openruko',
-  'host' : process.env['PGHOST'] || 'localhost',
-  'user' : process.env['PGUSER'] || 'openruko',
-  'password' :  process.env['PGPASSWORD']
-};
-
-var pgClient = new pg.Client(pgConfig);
+var pgClient = new pg.Client(conf.pg);
 pgClient.connect();
 module.exports = pgClient;

@@ -1,4 +1,7 @@
 var request = require('request');
+var conf = require('../conf');
+var logplexBaseUrl = 'http://' + conf.logplex.hostname + ':' + conf.logplex.udpPort + '/';
+
 module.exports = { 
   loggingSession: { 
     payloadSource : 'query',
@@ -13,7 +16,7 @@ module.exports = {
         tokens: map
       };
 
-      var logplexUrl = process.env['LOGPLEX_BASE_URL'] + 'sessions';
+      var logplexUrl = logplexBaseUrl + 'sessions';
 
       var appName = this.requestPayload.appName;
       console.log("Setting up log session for app " + appName);
@@ -27,7 +30,7 @@ module.exports = {
           cb({ error: 'unable to connect to log server', friendly: true})
           return;
         }
-        var url = process.env['LOGPLEX_BASE_URL'] + 'sessions/' + result.body.id;
+        var url = logplexBaseUrl + 'sessions/' + result.body.id;
         self.responsePayload = url;
         cb();
       });

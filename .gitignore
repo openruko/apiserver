@@ -1,3 +1,5 @@
 node_modules/
 local.env
+.env
 certs/
+npm-debug.log
