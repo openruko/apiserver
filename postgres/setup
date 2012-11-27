@@ -37,7 +37,11 @@ if [ "$1" != "--functions-only" ]; then
   #    add schema grant
   # fi
 
-  superUserKey=$(uuidgen)
+  if [ -z $APISERVER_KEY ]; then
+    superUserKey=$(uuidgen)
+  else
+    superUserKey=$APISERVER_KEY
+  fi
 
   if [ -f ~/.ssh/id_rsa.pub ]; then
     pubFile=~/.ssh/id_rsa.pub
