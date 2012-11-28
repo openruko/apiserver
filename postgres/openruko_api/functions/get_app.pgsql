@@ -5,7 +5,7 @@ DECLARE
   v_matched_app app%rowtype;
 BEGIN
 
-  SELECT * FROM app WHERE id = p_app_id INTO v_matched_app;
+  SELECT * FROM app WHERE id = p_app_id AND (app.status IS NULL OR app.status <> 'disabled') INTO v_matched_app;
 
   IF v_matched_app IS NULL THEN
     RAISE EXCEPTION 'App not found.';
