@@ -1,6 +1,6 @@
 var request = require('request');
 var conf = require('../conf');
-var logplexBaseUrl = 'http://' + conf.logplex.hostname + ':' + conf.logplex.udpPort + '/';
+var logplexBaseUrl = 'http://' + conf.logplex.hostname + ':' + conf.logplex.webPort + '/';
 
 module.exports = { 
   loggingSession: { 
