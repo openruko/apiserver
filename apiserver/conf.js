@@ -1,7 +1,7 @@
 var env = process.env;
 
 ['S3_KEY', 'S3_SECRET', 'S3_BUCKET'].forEach(function(envKey) {
-  if(env[envKey] === undefined) {
+  if(!env[envKey]) {
     throw new Error('Environment variables ' + envKey + ' must be defined.');
   }
 });
