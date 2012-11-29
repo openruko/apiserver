@@ -11,6 +11,8 @@ module.exports = {
     key: env.S3_KEY,
     secret: env.S3_SECRET,
     bucket: env.S3_BUCKET,
+    hostname: env.S3_HOSTNAME || null, // if null will be set by amazon-s3-url-signer
+    port: env.S3_PORT || null // if null will be set by amazon-s3-url-signer
     // Is it used ?
     //reposBucket: env.S3_REPOS_BUCKET || 'openruko_repos',
     //slugsBucket: env.S3_SLUGS_BUCKET || 'openruko_slugs'

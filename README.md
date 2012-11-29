@@ -81,6 +81,12 @@ supervisord or as part of boot script see ./apiserver/conf.js
 * S3_SECRET - You need an Amazon S3 account to store repos and slug archive
 * S3_BUCKET - You need an Amazon S3 account to store repos and slug archive
 
+If you don't want to use Amazon S3, you could use a clone like [fakes3](https://github.com/jubos/fake-s3).
+Just add the following environment variable:
+
+* S3_HOSTNAME - If yout host an S3 clone on your machine use mymachine.me in place of localhost.
+* S3_PORT - The S3 clone listening port.
+
 ## Launch
 
 ```
