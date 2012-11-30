@@ -103,7 +103,10 @@ if [ "$1" != "--functions-only" ]; then
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('$oruser_email','$oruser_name','$oruser_password')"
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('admin@dev.null','superuser','superuser', true, '$superUserKey')"
   if [ -n "$pubFile" ]; then
-    psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_key(1,'ssh-rsa','aaabbb','test','$yourPubFingerprint')"
+    type=$(cat "$pubFile" | cut -d' ' -f1)
+    hex=$(cat "$pubFile" | cut -d' ' -f2)
+    local=$(cat "$pubFile" | cut -d' ' -f3)  
+    psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_key(1,'$type','$hex','$local','$yourPubFingerprint')"
   fi
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_app(1, 'testing', 'cedar')"
   echo "API Super key is: $superUserKey"
