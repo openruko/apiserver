@@ -24,6 +24,7 @@ https://help.ubuntu.com/community/PostgreSQL
 apt-get install postgresql postgresql-client postgresql-server-dev-9.1
 apt-get install postgresql-contrib-9.1 # required for pycrypto hstore etc..
 apt-get install uuid-dev # required by node-uuid 
+apt-get install python-software-properties
 ```
 
 Node.js 0.8.x is not available in available Ubuntu repositories, however Chris Lea
@@ -31,7 +32,7 @@ provides a PPA that works very well, following the instructions onsite adding th
 relevant lines to /etc/apt/sources.list
 
 ```
-apt-key adv --recv-key --keyserver keyserver.ubuntu.com B9316A7BC7917B12
+add-apt-repository ppa:chris-lea/node.js
 apt-get update
 apt-get install nodejs npm
 ```
