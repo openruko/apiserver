@@ -34,7 +34,7 @@ BEGIN
       UPDATE instance SET retired = true
         WHERE id = k_instance.id;
 
-      PERFORM stop_instance(p_app_id, v_new_instance_id);
+      PERFORM stop_instance(p_app_id, k_instance.id);
 
     END LOOP;
 
