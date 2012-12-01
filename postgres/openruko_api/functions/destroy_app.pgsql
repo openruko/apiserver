@@ -6,7 +6,7 @@ DECLARE
   v_current_instances uuid[];
 BEGIN
 
-  UPDATE app SET status = 'disabled' WHERE id = p_app_id;
+  UPDATE app SET status = 'disabled', name = md5(random()::text) WHERE id = p_app_id;
 
   v_current_instances := ARRAY(SELECT id FROM instance WHERE app_id = p_app_id);
 
