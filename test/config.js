@@ -50,7 +50,7 @@ describe('config API', function(){
         if(err) return done(err);
         expect(res).to.have.status(200);
         expect(body).to.have.length(3);
-        expect(body[1].env).to.be.deep.equal({ KEY1: 'VALUE1', KEY2: 'VALUE2' });
+        expect(body[2].env).to.be.deep.equal({ KEY1: 'VALUE1', KEY2: 'VALUE2' });
         done();
       });
     });
