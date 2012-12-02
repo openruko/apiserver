@@ -7,7 +7,7 @@ var slugSigner = require('./s3url');
 var _ = require('underscore');
 var conf = require('./conf');
 
-tasks = {};
+var tasks = {};
 
 module.exports =  function(app, options) {
 
