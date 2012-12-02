@@ -1,11 +1,12 @@
 module.exports = {
   addApp: {
     routePath : '/apps',
-    payloadSource: 'query',
+    payloadSource: 'body',
     method: 'POST',
     okayCode: 202,
     before: function(cb) {
       var payload = this.requestPayload;
+      console.log(this.requestPayload);
       payload.name = payload.app.name;
       payload.stack = payload.app.stack;
       cb();
@@ -23,7 +24,7 @@ module.exports = {
       this.responsePayload = {};
       cb();
     },
-    errorCode: 422
+    errorCode: 404
   },
   getApps: {
     routePath: '/apps',
@@ -48,6 +49,7 @@ module.exports = {
     okayCode: 200,
     errorCode: 404
   },
+  // FIXME why this here, and in domains.js
   getDomains: {
     routePath: '/apps/:appName/domains',
     payloadSource: 'params',
@@ -56,4 +58,7 @@ module.exports = {
     okayCode: 200,
     errorCode: 404
   }
+  // TODO rename an app
+  // TODO transfer an app
+  // TODO toggle maintenance mode
 };

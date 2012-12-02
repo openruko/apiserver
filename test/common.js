@@ -9,18 +9,15 @@ exports.defaultUser = {
   isSuperUser: false
 };
 
-var app
+var app;
 exports.startServer = function(cb){
+  if(app) return cb();
   app = server.createServer({
     port: 5000,
     s3key: 123,
     s3secret: 123
   });
   app.start(cb);
-};
-
-exports.stopServer = function(cb){
-  app.stop(cb);
 };
 
 exports.addUser = function(user, cb){
