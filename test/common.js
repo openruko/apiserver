@@ -36,13 +36,24 @@ exports.cleanDB = function(cb){
   app.db.exec('clean', null, cb);
 };
 
+var base = 'http://:' + exports.defaultUser.apiKey + '@localhost:5000';
 exports.addApp = function(cb){
-  var base = 'http://:' + exports.defaultUser.apiKey + '@localhost:5000';
   request.post({
     url: base + '/apps',
     qs: {
       'app[name]' : 'myApp',
       'app[stack]': null
     }
+  }, cb);
+};
+
+exports.addConfig = function(cb){
+  request.put({
+    url: base + '/apps/myApp/config_vars',
+    body: JSON.stringify({
+      KEY1: 'VALUE1',
+      KEY2: 'VALUE2'
+    }),
+    json: false
   }, cb);
 };

@@ -5,6 +5,7 @@ var Assertion = chai.Assertion;
 var _ = require('underscore');
 var request = require('request').defaults({json: true});
 var common = require('./common');
+var preReceiveMock = require('./mock/codonhooks').preReceive;
 
 Assertion.addProperty('initialRelease', function () {
   var body = this._obj;
@@ -105,6 +106,58 @@ describe('releases API', function(){
       if(err) return done(err);
       expect(res).to.have.status(404);
       done();
+    });
+  });
+
+  describe('When pre-receive hook push a new release', function(){
+    beforeEach(function(done){
+      preReceiveMock('myApp', done);
+    });
+
+    it('listing releases should return the new release', function(done){
+      request({
+        url: base + '/apps/myApp/releases'
+      }, function(err, res, body){
+        if(err) return done(err);
+        expect(res).to.have.status(200);
+        expect(body).to.have.length(3);
+        expect(body[2].name).to.be.equal('v3');
+        expect(body[2].descr).to.be.equal('Deploy 78b214');
+        expect(body[2].commit).to.be.equal('78b214d29a4072f6d60cc91120d04eddd00e27b8');
+        expect(body[2].env).to.be.deep.equal({ PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin' });
+        expect(body[2].pstable).to.be.deep.equal({ web: 'node server.js' });
+        expect(body[2].slug_id).to.be.equal('1354484080.74201');
+        done();
+      });
+    });
+
+    describe('when adding config', function(){
+      beforeEach(function(done){
+        common.addConfig(function(err, res, body){
+          if(err) return done(err);
+          body = JSON.parse(body);
+          expect(res).to.have.status(200);
+          expect(body).to.have.keys(['PATH', 'KEY1', 'KEY2']);
+          done();
+        });
+      });
+
+      it('should merge env variable', function(done){
+        request({
+          url: base + '/apps/myApp/releases'
+        }, function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(200);
+          expect(body).to.have.length(4);
+          expect(body[3].descr).to.be.equal('Add KEY1, KEY2');
+          expect(body[3].env).to.be.deep.equal({
+            PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin',
+            KEY1: 'VALUE1',
+            KEY2: 'VALUE2'
+          });
+          done();
+        });
+      });
     });
   });
 });

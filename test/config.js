@@ -27,14 +27,7 @@ describe('config API', function(){
 
   describe('with two keys', function(){
     beforeEach(function(done){
-      request.put({
-        url: base + '/apps/myApp/config_vars',
-        body: JSON.stringify({
-          KEY1: 'VALUE1',
-          KEY2: 'VALUE2'
-        }),
-        json: false
-      }, function(err, res, body){
+      common.addConfig(function(err, res, body){
         if(err) return done(err);
         expect(res).to.have.status(200);
         body = JSON.parse(body);
@@ -69,8 +62,7 @@ describe('config API', function(){
     describe('when deleting one key', function(){
       beforeEach(function(done){
         request.del({
-          url: base + '/apps/myApp/config_vars/KEY1',
-          json: true
+          url: base + '/apps/myApp/config_vars/KEY1'
         }, function(err, res, body){
           if(err) return done(err);
           expect(res).to.have.status(200);
