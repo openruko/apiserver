@@ -3,7 +3,7 @@ chai.use(require('chai-http'));
 var expect = chai.expect;
 var Assertion = chai.Assertion
 var _ = require('underscore');
-var request = require('request').defaults({headers: { Accept: 'application/json'}});
+var request = require('request').defaults({json: true});
 var common = require('./common');
 
 Assertion.addProperty('app', function () {
@@ -30,7 +30,6 @@ describe('Apps', function(){
         url: base + '/apps'
       }, function(err, res, body){
         if(err) return done(err);
-        body = JSON.parse(body);
         expect(res).to.have.status(200);
         expect(body).to.be.empty;
         done();
@@ -40,15 +39,8 @@ describe('Apps', function(){
 
   describe('with one app', function(){
     beforeEach(function(done){
-      request.post({
-        url: base + '/apps',
-        form: {
-          'app[name]' : 'myApp',
-          'app[stack]': 'cedar'
-        }
-      }, function(err, res, body){
+      common.addApp(function(err, res, body){
         if(err) return done(err);
-        body = JSON.parse(body);
         expect(res).to.have.status(202);
         expect(body).to.be.an.app;
         done();
@@ -60,7 +52,6 @@ describe('Apps', function(){
         url: base + '/apps'
       }, function(err, res, body){
         if(err) return done(err);
-        body = JSON.parse(body);
         expect(res).to.have.status(200);
         expect(body).to.have.length(1);
         expect(body[0].name).to.be.equal('myApp');
@@ -73,7 +64,6 @@ describe('Apps', function(){
         url: base + '/apps/myApp'
       }, function(err, res, body){
         if(err) return done(err);
-        body = JSON.parse(body);
         expect(res).to.have.status(200);
         expect(body.name).to.be.equal('myApp');
         expect(body).to.be.an.app;
@@ -82,15 +72,8 @@ describe('Apps', function(){
     });
 
     it('should fail when creating an app with the same name', function(done){
-      request.post({
-        url: base + '/apps',
-        form: {
-          'app[name]' : 'myApp',
-          'app[stack]': 'cedar'
-        }
-      }, function(err, res, body){
+      common.addApp(function(err, res, body){
         if(err) return done(err);
-        body = JSON.parse(body);
         expect(res).to.have.status(422);
         expect(body.error).to.be.equal('Name is aleady taken.');
         done();
@@ -103,7 +86,6 @@ describe('Apps', function(){
           url: base + '/apps/myApp'
         }, function(err, res, body){
           if(err) return done(err);
-          body = JSON.parse(body);
           expect(res).to.have.status(200);
           done();
         });
@@ -114,7 +96,6 @@ describe('Apps', function(){
           url: base + '/apps'
         }, function(err, res, body){
           if(err) return done(err);
-          body = JSON.parse(body);
           expect(res).to.have.status(200);
           expect(body).to.be.empty;
           done();
@@ -126,7 +107,6 @@ describe('Apps', function(){
           url: base + '/apps/myApp'
         }, function(err, res, body){
           if(err) return done(err);
-          body = JSON.parse(body);
           expect(res).to.have.status(404);
           done();
         });
@@ -145,7 +125,7 @@ describe('Apps', function(){
       beforeEach(function(done){
         request.post({
           url: base + '/apps/myApp/collaborators',
-          form: {
+          qs: {
             'collaborator[email]': 'friend@friend.com'
           }
         }, function(err, res, body){
@@ -161,7 +141,6 @@ describe('Apps', function(){
           url: base + '/apps'
         }, function(err, res, body){
           if(err) return done(err);
-          body = JSON.parse(body);
           expect(res).to.have.status(200);
           expect(body).to.have.length(1);
           expect(body[0].name).to.be.equal('myApp');

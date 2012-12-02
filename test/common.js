@@ -1,5 +1,6 @@
 var server = require('../apiserver/apiserver');
 var _ = require('underscore');
+var request = require('request').defaults({json: true});
 
 exports.defaultUser = {
   email: 'test@test.com',
@@ -35,3 +36,13 @@ exports.cleanDB = function(cb){
   app.db.exec('clean', null, cb)
 };
 
+exports.addApp = function(cb){
+  var base = 'http://:' + exports.defaultUser.apiKey + '@localhost:5000';
+  request.post({
+    url: base + '/apps',
+    qs: {
+      'app[name]' : 'myApp',
+      'app[stack]': null
+    }
+  }, cb);
+};

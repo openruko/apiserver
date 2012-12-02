@@ -9,7 +9,7 @@ module.exports = {
   },
   addCollaborator: {
     routePath : '/apps/:appName/collaborators',
-    payloadSource: 'body',
+    payloadSource: 'query',
     method: 'POST',
     okayCode: 200,
     before: function(cb) {

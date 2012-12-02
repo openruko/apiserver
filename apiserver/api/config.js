@@ -22,6 +22,9 @@ module.exports = {
     method: 'PUT',
     okayCode: 200,
     before: function(cb) {
+      if(!this.raw.req.raw){
+        return cb(new Error('Do not set content-type. WTF Herroku cli.'));
+      }
       // heroku cli doesnt set content-type grr..
       var envvars = JSON.parse(this.raw.req.raw.body);
       this.requestPayload = {

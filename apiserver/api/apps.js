@@ -1,7 +1,7 @@
 module.exports = {
   addApp: {
     routePath : '/apps',
-    payloadSource: 'body',
+    payloadSource: 'query',
     method: 'POST',
     okayCode: 202,
     before: function(cb) {

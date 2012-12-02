@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "express": "~2.5.9",
-    "request": "~2.9.202",
+    "request": "~2.12.0",
     "pg": "~0.7.0",
     "db-migrate": "~0.1.0",
     "async": "~0.1.22",
