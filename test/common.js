@@ -33,7 +33,7 @@ exports.addUser = function(user, cb){
 };
 
 exports.cleanDB = function(cb){
-  app.db.exec('clean', null, cb)
+  app.db.exec('clean', null, cb);
 };
 
 exports.addApp = function(cb){

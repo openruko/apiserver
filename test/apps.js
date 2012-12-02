@@ -59,6 +59,17 @@ describe('Apps', function(){
       });
     });
 
+    it('should create a new release', function(done){
+      request({
+        url: base + '/apps/myApp/releases'
+      }, function(err, res, body){
+        if(err) return done(err);
+        expect(res).to.have.status(200);
+        expect(body).to.have.length(1);
+        done();
+      });
+    });
+
     it('should return app details', function(done){
       request({
         url: base + '/apps/myApp'

@@ -58,7 +58,6 @@ module.exports.buildHandler = function(app, routeInfo, key) {
     async.series(chain.map(function(chainFn) {
       return chainFn.bind(context);
     }), function(err) {
-
       context.error = err;
 
       var processResult = function() {

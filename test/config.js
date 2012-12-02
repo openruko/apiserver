@@ -26,14 +26,14 @@ describe('Config', function(){
   });
 
   describe('with two keys', function(){
-    beforeEach(function(){
+    beforeEach(function(done){
       request.put({
         url: base + '/apps/myApp/config_vars',
         body: JSON.stringify({
           KEY1: 'VALUE1',
           KEY2: 'VALUE2'
         }),
-        json: undefined
+        json: false
       }, function(err, res, body){
         if(err) return done(err);
         expect(res).to.have.status(200);
@@ -43,13 +43,13 @@ describe('Config', function(){
       });
     });
 
-    it('should create a new release', function(){
+    it('should create a new release', function(done){
       request({
-        url: base + '/apps/myApp/release'
+        url: base + '/apps/myApp/releases'
       }, function(err, res, body){
         if(err) return done(err);
         expect(res).to.have.status(200);
-        expect(body).to.have.length(1);
+        expect(body).to.have.length(2);
         done();
       });
     });
