@@ -61,7 +61,7 @@ module.exports.buildHandler = function(app, routeInfo, key) {
 
       context.error = err;
 
-      processResult = function() {
+      var processResult = function() {
         if(context.error && !context.unsafe) {
           outputError.call(context, context.error);
         } else {
