@@ -204,6 +204,7 @@ outputError = function(err) {
   response.header('Strict-Transport-Security','max-age=500');
   response.header('Cache-Control','private, max-age=0, must-revalidate');
 
+  if(err.code > 600) delete err.code; // do not transmit postgresql error code as http code.
   var errorCode = err.code || self.routeInfo.errorCode || 500;
   if(typeof err === 'object' && err.friendly) {
     response.send({ error: err.error }, errorCode);
