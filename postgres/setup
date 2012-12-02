@@ -37,21 +37,11 @@ if [ "$1" != "--functions-only" ]; then
   #    add schema grant
   # fi
 
-  superUserKey=$(uuidgen)
-
-  if [ -f ~/.ssh/id_rsa.pub ]; then
-    pubFile=~/.ssh/id_rsa.pub
+  if [ -z $APISERVER_KEY ]; then
+    superUserKey=$(uuidgen)
   else
-    echo -n "Enter location of your public key file []:"
-    read pubFile
+    superUserKey=$APISERVER_KEY
   fi
-
-  if [ -f "$pubFile" ]; then
-    yourPubFingerprint=$(ssh-keygen -l -f "$pubFile" | cut -d' ' -f2 | tr -d ':')
-  fi
-
-  echo "Using your public key fingerprint: $yourPubFingerprint"
-
 
   extensions=('plpgsql pgcrypto hstore')
 
@@ -98,10 +88,6 @@ if [ "$1" != "--functions-only" ]; then
 
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('$oruser_email','$oruser_name','$oruser_password')"
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('admin@dev.null','superuser','superuser', true, '$superUserKey')"
-  if [ -n "$pubFile" ]; then
-    psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_key(1,'ssh-rsa','aaabbb','test','$yourPubFingerprint')"
-  fi
-  psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_app(1, 'testing', 'cedar')"
   echo "API Super key is: $superUserKey"
   echo "^^ (set this in gitmouth and dyno hosts' env vars - see README.md)"
 

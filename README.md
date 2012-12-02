@@ -24,6 +24,7 @@ https://help.ubuntu.com/community/PostgreSQL
 apt-get install postgresql postgresql-client postgresql-server-dev-9.1
 apt-get install postgresql-contrib-9.1 # required for pycrypto hstore etc..
 apt-get install uuid-dev # required by node-uuid 
+apt-get install python-software-properties
 ```
 
 Node.js 0.8.x is not available in available Ubuntu repositories, however Chris Lea
@@ -31,7 +32,7 @@ provides a PPA that works very well, following the instructions onsite adding th
 relevant lines to /etc/apt/sources.list
 
 ```
-apt-key adv --recv-key --keyserver keyserver.ubuntu.com B9316A7BC7917B12
+add-apt-repository ppa:chris-lea/node.js
 apt-get update
 apt-get install nodejs npm
 ```
@@ -80,6 +81,12 @@ supervisord or as part of boot script see ./apiserver/conf.js
 * S3_KEY - You need an Amazon S3 account to store repos and slug archive
 * S3_SECRET - You need an Amazon S3 account to store repos and slug archive
 * S3_BUCKET - You need an Amazon S3 account to store repos and slug archive
+
+If you don't want to use Amazon S3, you could use a clone like [fakes3](https://github.com/jubos/fake-s3).
+Just add the following environment variable:
+
+* S3_HOSTNAME - If yout host an S3 clone on your machine use mymachine.me in place of localhost.
+* S3_PORT - The S3 clone listening port.
 
 ## Launch
 

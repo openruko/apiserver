@@ -7,7 +7,7 @@ BEGIN
 
     PERFORM 1 FROM app INNER JOIN
         oruser ON oruser.id = app.user_id
-        WHERE oruser.email = p_email;
+        WHERE oruser.email = p_email AND app.id = app_id;
 
     IF found THEN
       RAISE EXCEPTION 'Can not remove app owner';
@@ -21,7 +21,7 @@ BEGIN
       RETURN QUERY SELECT p_app_id::integer AS app_id, 
         p_email::text as email, 'deleted'::text;
     ELSE
-      RAISE EXCEPTION 'User not found.';
+      RAISE EXCEPTION 'User or app not found.';
     END IF;
 
 END;
