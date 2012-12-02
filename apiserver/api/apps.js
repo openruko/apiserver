@@ -6,7 +6,6 @@ module.exports = {
     okayCode: 202,
     before: function(cb) {
       var payload = this.requestPayload;
-      console.log(this.requestPayload);
       payload.name = payload.app.name;
       payload.stack = payload.app.stack;
       cb();

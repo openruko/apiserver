@@ -1,12 +1,12 @@
 var chai = require('chai-stack');
 chai.use(require('chai-http'));
 var expect = chai.expect;
-var Assertion = chai.Assertion
+var Assertion = chai.Assertion;
 var _ = require('underscore');
 var request = require('request').defaults({json: true});
 var common = require('./common');
 
-Assertion.addProperty('apps API', function () {
+Assertion.addProperty('app', function () {
   var body = this._obj;
   expect(body.id).to.exist;
   expect(body.web_url).to.be.equal('http://myApp.mymachine.me/');
@@ -18,7 +18,7 @@ Assertion.addProperty('apps API', function () {
 
 before(common.startServer);
 
-describe('Apps', function(){
+describe('Apps API', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
 
@@ -65,7 +65,7 @@ describe('Apps', function(){
       }, function(err, res, body){
         if(err) return done(err);
         expect(res).to.have.status(200);
-        expect(body).to.have.length(1);
+        expect(body).to.have.length(2);
         done();
       });
     });

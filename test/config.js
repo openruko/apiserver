@@ -49,7 +49,8 @@ describe('config API', function(){
       }, function(err, res, body){
         if(err) return done(err);
         expect(res).to.have.status(200);
-        expect(body).to.have.length(2);
+        expect(body).to.have.length(3);
+        expect(body[1].env).to.be.deep.equal({ KEY1: 'VALUE1', KEY2: 'VALUE2' });
         done();
       });
     });
@@ -84,7 +85,7 @@ describe('config API', function(){
         }, function(err, res, body){
           if(err) return done(err);
           expect(res).to.have.status(200);
-          expect(body).to.have.length(3);
+          expect(body).to.have.length(4);
           done();
         });
       });
