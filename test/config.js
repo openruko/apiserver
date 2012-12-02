@@ -7,7 +7,7 @@ var common = require('./common');
 
 before(common.startServer);
 
-describe('Config', function(){
+describe('config API', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
   beforeEach(common.addApp);

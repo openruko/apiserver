@@ -6,7 +6,7 @@ var _ = require('underscore');
 var request = require('request').defaults({json: true});
 var common = require('./common');
 
-Assertion.addProperty('app', function () {
+Assertion.addProperty('apps API', function () {
   var body = this._obj;
   expect(body.id).to.exist;
   expect(body.web_url).to.be.equal('http://myApp.mymachine.me/');

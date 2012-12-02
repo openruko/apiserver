@@ -7,7 +7,7 @@ var common = require('./common');
 
 before(common.startServer);
 
-describe('domains', function(){
+describe('domains API', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
   beforeEach(common.addApp);

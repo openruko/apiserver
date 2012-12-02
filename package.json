@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "./apiserver/bin/apiserver",
-    "test": "APISERVER_KEY=f1c4fcd5-add7-42a7-8b81-c978a624d45e PG_DATABASE=openruko_test PG_USER=$LOGNAME PG_PASSWORD=coco S3_KEY=test S3_SECRET=test S3_BUCKET=test ./node_modules/.bin/mocha -R spec"
+    "test": "APISERVER_KEY=f1c4fcd5-add7-42a7-8b81-c978a624d45e PG_DATABASE=openruko_test PG_USER=$LOGNAME PG_PASSWORD=coco S3_KEY=test S3_SECRET=test S3_BUCKET=test ./node_modules/.bin/mocha -R spec --grep \"$GREP\""
   },
   "license": "MIT",
   "devDependencies": {
