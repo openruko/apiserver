@@ -65,6 +65,30 @@ describe('Config', function(){
       });
     });
 
+    describe('when deleting one key', function(){
+      beforeEach(function(done){
+        request.del({
+          url: base + '/apps/myApp/config_vars/KEY1',
+          json: true
+        }, function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(200);
+          expect(body).to.have.keys(['KEY2']);
+          done();
+        });
+      });
+
+      it('should create a new release', function(done){
+        request({
+          url: base + '/apps/myApp/releases'
+        }, function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(200);
+          expect(body).to.have.length(3);
+          done();
+        });
+      });
+    });
   });
 
 });

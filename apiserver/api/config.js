@@ -14,7 +14,12 @@ module.exports = {
   removeConfig: {
     routePath: '/apps/:appName/config_vars/:keyToRemove',
     method: 'DELETE',
-    okayCode: 200
+    okayCode: 200,
+    after: function(cb) {
+      var result = this.responsePayload;
+      this.responsePayload = hstore.parse(result.rows[0].env);
+      cb();
+    }
   },
   addConfig: {
     routePath : '/apps/:appName/config_vars',
