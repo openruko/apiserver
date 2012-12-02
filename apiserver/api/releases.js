@@ -64,11 +64,5 @@ module.exports = {
     okayCode: 200,
     errorCode: 404,
     method: 'post'
-  },
-  publishRelease: {
-    routePath: '/internal/publish_release',
-    payloadSource: 'body',
-    okayCode: 200,
-    method: 'post'
   }
 };
