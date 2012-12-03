@@ -12,19 +12,33 @@ module.exports = {
     // required type=
     payloadSource: 'query',
     method: 'POST',
-    okayCode: 200
+    okayCode: 200,
+    after: function(cb){
+      this.responsePayload = "ok";
+      cb();
+    }
   },
   restartInstances: {
     routePath: '/apps/:appName/ps/restart',
     // optional type=
     method: 'POST',
-    okayCode: 200
+    okayCode: 200,
+    after: function(cb){
+      this.responsePayload = "ok";
+      cb();
+    }
   },
   scaleInstances: {
     routePath: '/apps/:appName/ps/scale',
     payloadSource: 'query',
     // type= qty=
     method: 'POST',
-    okayCode: 200
+    okayCode: 200,
+    errorCode: 404,
+    after: function(cb){
+      /* Not very useful for information, but this is the behaviour of Heroku */
+      this.responsePayload = ""+this.requestPayload.qty;
+      cb();
+    }
   }
 };
