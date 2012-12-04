@@ -146,9 +146,10 @@ describe('ps API', function(){
             });
           });
 
+          // TODO check this is the behaviour of Heroku
           it('it should return empty when listing processes', function(done){
             request({
-              url: base + '/apps/myApp/ps',
+              url: base + '/apps/myApp/ps'
             }, function(err, res, body){
               if(err) return done(err);
               expect(res).to.have.status(200);
@@ -278,3 +279,6 @@ describe('ps API', function(){
     });
   });
 });
+
+// TODO run-off command
+// TODO workers
