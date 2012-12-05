@@ -33,7 +33,7 @@ module.exports = {
         }
         var url = logplexBaseUrl + 'sessions/' + result.body.id;
 
-        var options = this.requestPayload;
+        var options = self.requestPayload;
         var qs = querystring.stringify({
           tail: options.tail,
           num: options.num,
