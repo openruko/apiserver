@@ -98,10 +98,7 @@ tasks.populateJobsOutstanding = function(callback) {
   dbfacade.exec('getJobsOutstanding', {}, function(err, result) {
     if(err) return callback(err);
 
-    result.rows.filter(function(row) {
-      return row.next_action === 'start';
-    }).forEach(function(row) {
-
+    result.rows.forEach(function(row){
       row.env_vars = hstore.parse(row.env_vars ) || {};
       row.mounts = hstore.parse(row.mounts) || {};
 
@@ -114,10 +111,15 @@ tasks.populateJobsOutstanding = function(callback) {
       _(row.env_vars).forEach(function(mountValue, mountKey){
         if(!mountValue) return callback(new Error('Mount key ' + mountKey + ' does not have value'));
         row.env_vars[mountKey] = processMount(mountValue);
-     });
+      });
+    });
 
+    result.rows.filter(function(row) {
+      return row.next_action === 'start';
+    }).forEach(function(row) {
       self.jobsOutstanding.provision.push(row);
     });
+
     result.rows.filter(function(row) {
       return row.next_action === 'kill';
     }).forEach(function(row) {
@@ -180,6 +182,7 @@ tasks.markJobsDistributed = function(cb) {
     async.series(jobsDistributed.map(function(job) {
       return function(cbx) {
         var data = { host: job.host, id: job.id };
+        console.log('Mark Job as Distributed', data);
         dbfacade.exec('markJobDistributed', data,
                     function(err, result) {
                       if(err) return cbx(err);

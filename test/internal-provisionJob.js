@@ -16,7 +16,6 @@ Assertion.addProperty('startJob', function (){
   expect(data.dyno_id).to.exist;
   expect(data.rez_id).to.be.null;
   expect(data.template).to.be.equal('dyno');
-  expect(data.name).to.be.equal('web.1');
   expect(data.env_vars).to.be.deep.equal({
     PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
   });
@@ -51,11 +50,11 @@ Assertion.addProperty('killJob', function () {
   expect(data.logplex_id).to.exist;
   expect(data.mounts['/app']).to.exist;
   expect(data.created_at).to.exist;
-  expect(data.next_action).to.be.equal('start');
-  expect(data.distributed_at).to.be.null;
-  expect(data.distributed_to).to.be.null;
+  expect(data.next_action).to.be.equal('kill');
+  expect(data.distributed_at).to.exist;
+  expect(data.distributed_to).to.be.equal('127.0.0.1');
   expect(data.kill_at).to.be.null;
-  expect(data.kill_method).to.be.null;
+  expect(data.kill_method).to.be.equal('explicit');
 });
 
 describe('internal provisionJob', function(){
@@ -120,15 +119,15 @@ describe('internal provisionJob', function(){
             qty: 1
           },
           json: false
-        }, done);
-      });
-
-      it('should create one "start" job', function(done){
-        dynohostMock.getJobs(function(err, data){
-          if(err) return done(err);
-          expect(data).to.have.length(1);
-          expect(data[0]).to.be.startJob;
-          done();
+        }, function(){
+          dynohostMock.getJobs(function(err, data){
+            if(err) return done(err);
+            // it should create one "start" job'
+            expect(data).to.have.length(1);
+            expect(data[0]).to.be.startJob;
+            expect(data[0].name).to.be.equal('web.1');
+            done();
+          });
         });
       });
 
@@ -196,6 +195,7 @@ describe('internal provisionJob', function(){
             if(err) return done(err);
             expect(data).to.have.length(1);
             expect(data[0]).to.be.startJob;
+            expect(data[0].name).to.be.equal('web.2');
             done();
           });
         });
