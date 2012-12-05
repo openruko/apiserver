@@ -103,14 +103,48 @@ describe('internal provisionJob', function(){
     });
   });
 
-  describe('with a commit', function(){
+  describe('with a commit an instance is started', function(){
+    var instanceId;
     beforeEach(function(done){
-      preReceiveMock('myApp', done);
+      preReceiveMock('myApp', function(){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          // it should create one "start" job'
+          expect(data).to.have.length(1);
+          expect(data[0]).to.be.startJob;
+          expect(data[0].name).to.be.equal('web.1');
+          done();
+        });
+      });
     });
 
-    describe('with one instance started', function(){
-      var instanceId;
+    describe('when stopping the instance', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/stop',
+          qs: {
+            type: 'web'
+          },
+          json: false
+        }, function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(200);
+          expect(body).to.be.equal('ok');
+          done();
+        });
+      });
 
+      it('should create one "kill" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(1);
+          expect(data[0]).to.be.killJob;
+          done();
+        });
+      });
+    });
+
+    describe('when scaling nothing', function(){
       beforeEach(function(done){
         request.post({
           url: base + '/apps/myApp/ps/scale',
@@ -119,107 +153,59 @@ describe('internal provisionJob', function(){
             qty: 1
           },
           json: false
-        }, function(){
-          dynohostMock.getJobs(function(err, data){
-            if(err) return done(err);
-            // it should create one "start" job'
-            expect(data).to.have.length(1);
-            expect(data[0]).to.be.startJob;
-            expect(data[0].name).to.be.equal('web.1');
-            done();
-          });
-        });
+        }, done);
       });
 
-      describe('when stopping the instance', function(){
-        beforeEach(function(done){
-          request.post({
-            url: base + '/apps/myApp/ps/stop',
-            qs: {
-              type: 'web'
-            },
-            json: false
-          }, function(err, res, body){
-            if(err) return done(err);
-            expect(res).to.have.status(200);
-            expect(body).to.be.equal('ok');
-            done();
-          });
-        });
-
-        it('should create one "kill" job', function(done){
-          dynohostMock.getJobs(function(err, data){
-            if(err) return done(err);
-            expect(data).to.have.length(1);
-            expect(data[0]).to.be.killJob;
-            done();
-          });
+      it('should not create provision job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.be.empty;
+          done();
         });
       });
+    });
 
-      describe('when scaling nothing', function(){
-        beforeEach(function(done){
-          request.post({
-            url: base + '/apps/myApp/ps/scale',
-            qs: {
-              type: 'web',
-              qty: 1
-            },
-            json: false
-          }, done);
-        });
-
-        it('should not create provision job', function(done){
-          dynohostMock.getJobs(function(err, data){
-            if(err) return done(err);
-            expect(data).to.be.empty;
-            done();
-          });
-        });
+    describe('when scaling an app up', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/scale',
+          qs: {
+            type: 'web',
+            qty: 2
+          },
+          json: false
+        }, done);
       });
 
-      describe('when scaling an app up', function(){
-        beforeEach(function(done){
-          request.post({
-            url: base + '/apps/myApp/ps/scale',
-            qs: {
-              type: 'web',
-              qty: 2
-            },
-            json: false
-          }, done);
-        });
-
-        it('should create one "start" job', function(done){
-          dynohostMock.getJobs(function(err, data){
-            if(err) return done(err);
-            expect(data).to.have.length(1);
-            expect(data[0]).to.be.startJob;
-            expect(data[0].name).to.be.equal('web.2');
-            done();
-          });
+      it('should create one "start" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(1);
+          expect(data[0]).to.be.startJob;
+          expect(data[0].name).to.be.equal('web.2');
+          done();
         });
       });
+    });
 
-      describe('when scaling an app down', function(){
-        beforeEach(function(done){
-          request.post({
-            url: base + '/apps/myApp/ps/scale',
-            qs: {
-              type: 'web',
-              qty: 0
-            },
-            json: false
-          }, done);
-        });
+    describe('when scaling an app down', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/scale',
+          qs: {
+            type: 'web',
+            qty: 0
+          },
+          json: false
+        }, done);
+      });
 
-        it('should create one "kill" job', function(done){
-          dynohostMock.getJobs(function(err, data){
-            if(err) return done(err);
-            expect(data).to.have.length(1);
-            expect(data[0]).to.be.killJob;
-            done();
-          });
+      it('should create one "kill" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(1);
+          expect(data[0]).to.be.killJob;
+          done();
         });
       });
     });
