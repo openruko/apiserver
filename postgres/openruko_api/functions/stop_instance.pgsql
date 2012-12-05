@@ -5,9 +5,6 @@ $BODY$
 DECLARE
 BEGIN
 
-  UPDATE instance SET retired = true
-    WHERE id = p_instance_id;
-
   UPDATE provision_job 
     SET next_action='kill', kill_method = 'explicit'
     WHERE instance_id = p_instance_id;

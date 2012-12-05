@@ -32,6 +32,9 @@ BEGIN
           LIMIT v_instance_diff)
     LOOP
 
+      UPDATE instance SET retired = true
+        WHERE id = k_instance.id;
+
       PERFORM stop_instance(p_app_id, k_instance.id);
 
     END LOOP;
