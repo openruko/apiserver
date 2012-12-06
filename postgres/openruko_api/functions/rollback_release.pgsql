@@ -9,17 +9,16 @@ BEGIN
 
   IF p_release_id = 'last' THEN
     SELECT * FROM release WHERE app_id = p_app_id 
-      AND commit IS NOT NULL
-      ORDER BY created_at DESC LIMIT 1 OFFSET 1 
+      ORDER BY id DESC LIMIT 1 OFFSET 1 
         INTO v_old_release;
 
   ELSE
     SELECT * FROM release WHERE app_id = p_app_id 
-      AND name = p_release_id AND commit IS NOT NULL INTO v_old_release;
+      AND name = p_release_id INTO v_old_release;
   END IF;
 
   IF v_old_release IS NULL THEN
-    RAISE EXCEPTION 'Can not rollback to release without commit.';
+    RAISE EXCEPTION 'Release not found.';
   END IF;
 
   v_descr = 'Rollback to v'::text  || v_old_release.seq_count::text;

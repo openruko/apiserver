@@ -17,7 +17,7 @@ var options = {
   port: 4321
 };
 
-server = tls.createServer(options, function(s) {
+var server = tls.createServer(options, function(s) {
 
   s.setNoDelay();
   s.once('data', function(data) {

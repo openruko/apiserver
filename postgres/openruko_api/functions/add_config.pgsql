@@ -32,17 +32,11 @@ BEGIN
   v_new_name := 'v' || v_new_seq_count::text;
 
   -- store the new release, we never overwrite previous releases
-  INSERT INTO release
-    (app_id, name, seq_count, descr, commit, env, pstable, addons,
-      user_email, created_at)
-    VALUES (p_app_id, v_new_name, v_new_seq_count, v_new_descr, 
-      v_last_release.commit, v_new_env_vars, v_last_release.pstable, 
-      v_last_release.addons, v_user.email, NOW())
-       RETURNING id INTO v_release_id;
+  PERFORM create_release(p_app_id, v_user.email, v_new_descr, v_last_release.commit,
+    v_last_release.slug_id, v_new_env_vars, v_last_release.pstable, v_last_release.addons);
 
-  PERFORM * FROM restart_instances(p_app_id, NULL::text);
-
-  RETURN QUERY SELECT * FROM release WHERE id = v_release_id;
+  RETURN QUERY SELECT * FROM release WHERE app_id = p_app_id
+    ORDER BY id DESC LIMIT 1;
   
 END; 
 $BODY$

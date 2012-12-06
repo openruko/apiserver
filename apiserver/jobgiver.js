@@ -7,7 +7,7 @@ var slugSigner = require('./s3url');
 var _ = require('underscore');
 var conf = require('./conf');
 
-tasks = {};
+var tasks = {};
 
 module.exports =  function(app, options) {
 
@@ -98,26 +98,28 @@ tasks.populateJobsOutstanding = function(callback) {
   dbfacade.exec('getJobsOutstanding', {}, function(err, result) {
     if(err) return callback(err);
 
-    result.rows.filter(function(row) {
-      return row.next_action === 'start';
-    }).forEach(function(row) {
-
+    result.rows.forEach(function(row){
       row.env_vars = hstore.parse(row.env_vars ) || {};
       row.mounts = hstore.parse(row.mounts) || {};
 
       //sign slug urls
       _(row.mounts).forEach(function(mountValue, mountKey){
-        if(!mountValue) return callback(new Error('Mount key ' + mountKey + ' does not have value'));
+        if(!mountValue) return
         row.mounts[mountKey] = processMount(mountValue);
       });
 
       _(row.env_vars).forEach(function(mountValue, mountKey){
-        if(!mountValue) return callback(new Error('Mount key ' + mountKey + ' does not have value'));
+        if(!mountValue) return
         row.env_vars[mountKey] = processMount(mountValue);
-     });
+      });
+    });
 
+    result.rows.filter(function(row) {
+      return row.next_action === 'start';
+    }).forEach(function(row) {
       self.jobsOutstanding.provision.push(row);
     });
+
     result.rows.filter(function(row) {
       return row.next_action === 'kill';
     }).forEach(function(row) {
@@ -180,6 +182,7 @@ tasks.markJobsDistributed = function(cb) {
     async.series(jobsDistributed.map(function(job) {
       return function(cbx) {
         var data = { host: job.host, id: job.id };
+        console.log('Mark Job as Distributed', data);
         dbfacade.exec('markJobDistributed', data,
                     function(err, result) {
                       if(err) return cbx(err);
@@ -193,7 +196,7 @@ tasks.markJobsDistributed = function(cb) {
 };
 
 tasks.waitPeriod = function(cb) {
-    //give dyno nodes 250ms to check back in for jobs
+  //give dyno nodes 250ms to check back in for jobs
   var self = this;
   setTimeout(function() { 
     self.assignedHosts = [];

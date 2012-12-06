@@ -18,7 +18,7 @@ module.exports = {
       cb();
     },
     after: function(cb) {
-      this.responsePayload = "Added as collaborator";
+      this.responsePayload = this.requestPayload.collaborator.email + " added as a collaborator on " + this.requestPayload.appName;
       cb();
     },
     errorCode: 422
@@ -28,7 +28,10 @@ module.exports = {
     payloadSource: 'params',
     method: 'DELETE',
     okayCode: 200,
-    after: 'singleRow',
-    errorCode: 422
+    after: function(cb) {
+      this.responsePayload = this.responsePayload.rows[0].email + " has been removed as collaborator on " + this.requestPayload.appName;
+      cb();
+    },
+    errorCode: 404
   }
 };

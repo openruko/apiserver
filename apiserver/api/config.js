@@ -14,7 +14,12 @@ module.exports = {
   removeConfig: {
     routePath: '/apps/:appName/config_vars/:keyToRemove',
     method: 'DELETE',
-    okayCode: 200
+    okayCode: 200,
+    after: function(cb) {
+      var result = this.responsePayload;
+      this.responsePayload = hstore.parse(result.rows[0].env);
+      cb();
+    }
   },
   addConfig: {
     routePath : '/apps/:appName/config_vars',
@@ -22,6 +27,9 @@ module.exports = {
     method: 'PUT',
     okayCode: 200,
     before: function(cb) {
+      if(!this.raw.req.raw){
+        return cb(new Error('Do not set content-type. WTF Herroku cli.'));
+      }
       // heroku cli doesnt set content-type grr..
       var envvars = JSON.parse(this.raw.req.raw.body);
       this.requestPayload = {
