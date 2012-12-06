@@ -7,6 +7,7 @@ var request = require('request').defaults({json: true});
 var common = require('./common');
 var preReceiveMock = require('./mock/codonhooks').preReceive;
 var dynohostMock = require('./mock/dynohost');
+var gitmouthMock = require('./mock/gitmouth');
 
 before(common.startServer);
 
@@ -16,15 +17,11 @@ Assertion.addProperty('startJob', function (){
   expect(data.dyno_id).to.exist;
   expect(data.rez_id).to.be.null;
   expect(data.template).to.be.equal('dyno');
-  expect(data.env_vars).to.be.deep.equal({
-    PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
-  });
   expect(data.attached).to.be.false;
   expect(data.pty).to.be.false;
   expect(data.command).to.be.equal('node');
   expect(data.command_args).to.be.deep.equal(['server.js']);
   expect(data.logplex_id).to.exist;
-  expect(data.mounts['/app']).to.exist;
   expect(data.created_at).to.exist;
   expect(data.next_action).to.be.equal('start');
   expect(data.distributed_at).to.be.null;
@@ -39,10 +36,10 @@ Assertion.addProperty('killJob', function () {
   expect(data.dyno_id).to.exist;
   expect(data.rez_id).to.be.null;
   expect(data.template).to.be.equal('dyno');
-  expect(data.name).to.be.equal('web.1');
   expect(data.env_vars).to.be.deep.equal({
     PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
   });
+  expect(data.name).to.be.equal('web.1');
   expect(data.attached).to.be.false;
   expect(data.pty).to.be.false;
   expect(data.command).to.be.equal('node');
@@ -103,6 +100,43 @@ describe('internal provisionJob', function(){
     });
   });
 
+  describe('When executing a git action', function(){
+    beforeEach(function(done){
+      gitmouthMock.handleGitCommand('myApp');
+      setTimeout(done, 100);
+    });
+
+    it('Should create a "start build" job', function(done){
+      dynohostMock.getJobs(function(err, data){
+        if(err) return done(err);
+        expect(data).to.have.length(1);
+        expect(data[0].instance_id).to.be.null;
+        expect(data[0].dyno_id).to.exist;
+        expect(data[0].rez_id).to.exist;
+        expect(data[0].template).to.be.equal('build');
+        expect(data[0].env_vars.slug_id).to.exist;
+        expect(data[0].env_vars.dyno_web_url).to.exist;
+        expect(data[0].env_vars.repo_put_url).to.exist;
+        expect(data[0].env_vars.slug_put_url).to.exist;
+        expect(data[0].env_vars.push_code_url).to.exist;
+        expect(data[0].attached).to.be.true;
+        expect(data[0].pty).to.be.false;
+        expect(data[0].command).to.be.equal('/usr/bin/git-receive-pack');
+        expect(data[0].command_args).to.be.deep.equal(['/app']);
+        expect(data[0].logplex_id).to.be.null;
+        expect(data[0].mounts['/app']).to.exist;
+        expect(data[0].mounts['/tmp/buildpacks']).to.exist;
+        expect(data[0].created_at).to.exist;
+        expect(data[0].next_action).to.be.equal('start');
+        expect(data[0].distributed_at).to.be.null;
+        expect(data[0].distributed_to).to.be.null;
+        expect(data[0].kill_at).to.be.null;
+        expect(data[0].kill_method).to.be.null;
+        done();
+      });
+    });
+  });
+
   describe('with a commit an instance is started', function(){
     var instanceId;
     beforeEach(function(done){
@@ -113,6 +147,35 @@ describe('internal provisionJob', function(){
           expect(data).to.have.length(1);
           expect(data[0]).to.be.startJob;
           expect(data[0].name).to.be.equal('web.1');
+          expect(data[0].env_vars).to.be.deep.equal({
+            PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin',
+          });
+          expect(data[0].mounts['/app']).to.exist;
+          done();
+        });
+      });
+    });
+
+
+    describe('when changing the config', function(){
+      beforeEach(function(done){
+        common.addConfig(done)
+      });
+
+      it('should create a "kill" and a "start" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(2);
+          expect(data[0]).to.be.startJob;
+          expect(data[0].name).to.be.equal('web.1');
+          expect(data[0].env_vars).to.be.deep.equal({
+            PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin',
+            KEY1: 'VALUE1',
+            KEY2: 'VALUE2'
+          });
+          expect(data[0].mounts['/app']).to.exist;
+
+          expect(data[1]).to.be.killJob;
           done();
         });
       });
@@ -126,12 +189,7 @@ describe('internal provisionJob', function(){
             type: 'web'
           },
           json: false
-        }, function(err, res, body){
-          if(err) return done(err);
-          expect(res).to.have.status(200);
-          expect(body).to.be.equal('ok');
-          done();
-        });
+        }, done);
       });
 
       it('should create one "kill" job', function(done){
@@ -139,6 +197,59 @@ describe('internal provisionJob', function(){
           if(err) return done(err);
           expect(data).to.have.length(1);
           expect(data[0]).to.be.killJob;
+          done();
+        });
+      });
+    });
+
+    describe('when doing a rollback of the instance', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/releases',
+          qs: {
+            rollback: 'v3'
+          },
+          json: false
+        }, done)
+      });
+
+      it('should create a "kill" and a "start" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(2);
+          expect(data[0]).to.be.startJob;
+          expect(data[0].env_vars).to.be.deep.equal({
+            PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
+          });
+          expect(data[0].mounts['/app']).to.exist;
+          expect(data[1]).to.be.killJob;
+          done();
+        });
+      });
+    });
+
+    describe('when restarting the instance', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/restart',
+          qs: {
+            type: 'web'
+          },
+          json: false
+        }, done);
+      });
+
+      it('should create one "kill" job and one "start" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(2);
+          expect(data[0]).to.be.startJob;
+          expect(data[0].env_vars).to.be.deep.equal({
+            PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
+          });
+          expect(data[0].mounts['/app']).to.exist;
+          expect(data[0].name).to.be.equal('web.1');
+          expect(data[1]).to.be.killJob;
           done();
         });
       });
@@ -182,6 +293,10 @@ describe('internal provisionJob', function(){
           if(err) return done(err);
           expect(data).to.have.length(1);
           expect(data[0]).to.be.startJob;
+          expect(data[0].env_vars).to.be.deep.equal({
+            PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
+          });
+          expect(data[0].mounts['/app']).to.exist;
           expect(data[0].name).to.be.equal('web.2');
           done();
         });
@@ -212,10 +327,5 @@ describe('internal provisionJob', function(){
   });
 });
 
-// TODO fix failing tests
-// TODO restart
-// TODO rollback
-// TODO config
 // TODO run-off command
 // TODO workers
-// TODO gitaction
