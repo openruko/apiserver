@@ -8,7 +8,8 @@ module.exports = {
   deleteDomain: {
     routePath: '/apps/:appName/domains/:domainName',
     method: 'delete',
-    okayCode: 200
+    okayCode: 200,
+    errorCode: 404
   },
   deleteDomains: {
     routePath: '/apps/:appName/domains',
@@ -20,6 +21,7 @@ module.exports = {
     payloadSource: 'query',
     method: 'post',
     okayCode: 201,
+    errorCode: 422,
     after: function(cb) {
       this.responsePayload = {
         domain: this.requestPayload.domainName

@@ -56,13 +56,13 @@ module.exports = {
       this.requestPayload.releaseId = this.requestPayload.rollback || 'last';
       cb();
     },
+    after: function(cb) {
+      // TODO replace is a pretty bad hack
+      this.responsePayload = this.responsePayload.rows[0].descr.replace(/Rollback to /, '');
+      cb();
+    },
     okayCode: 200,
-    method: 'post'
-  },
-  publishRelease: {
-    routePath: '/internal/publish_release',
-    payloadSource: 'body',
-    okayCode: 200,
+    errorCode: 404,
     method: 'post'
   }
 };

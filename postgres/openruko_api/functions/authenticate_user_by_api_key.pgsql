@@ -8,7 +8,7 @@ BEGIN
   SELECT * FROM oruser WHERE api_key = p_api_key INTO v_matched_user;
 
   IF v_matched_user IS NULL THEN
-    RAISE EXCEPTION 'Authentication failed no user';
+    RAISE EXCEPTION 'Unauthorized';
   END IF;
 
   RETURN NEXT v_matched_user; 

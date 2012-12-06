@@ -58,10 +58,9 @@ module.exports.buildHandler = function(app, routeInfo, key) {
     async.series(chain.map(function(chainFn) {
       return chainFn.bind(context);
     }), function(err) {
-
       context.error = err;
 
-      processResult = function() {
+      var processResult = function() {
         if(context.error && !context.unsafe) {
           outputError.call(context, context.error);
         } else {
@@ -96,7 +95,7 @@ authenticateRequest = function(cb) {
   
   self.db.exec('authenticateUserByApiKey', { apiKey: apikey }, 
   function(err, result) {
-    if(err) return cb(err);
+    if(err) return cb(_.extend(err, {code: 401}));
 
     var user = result.rows[0];
     self.requestPayload.userId = user.id;
@@ -205,7 +204,8 @@ outputError = function(err) {
   response.header('Strict-Transport-Security','max-age=500');
   response.header('Cache-Control','private, max-age=0, must-revalidate');
 
-  var errorCode = self.routeInfo.errorCode || 500;
+  if(err.code > 600) delete err.code; // do not transmit postgresql error code as http code.
+  var errorCode = err.code || self.routeInfo.errorCode || 500;
   if(typeof err === 'object' && err.friendly) {
     response.send({ error: err.error }, errorCode);
   } else {

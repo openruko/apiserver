@@ -55,6 +55,13 @@ BEGIN
       pstable, addons, user_email, created_at)
     VALUEs (v_app_id, 'v1',1, 'Initial release', NULL, ''::hstore,
       ''::hstore, '{}', v_user.email, NOW());
+
+  -- looks hacky but this is done by Heroku, useful to rollback last release.
+  INSERT INTO release
+   (app_id, name, seq_count, descr, commit, env,
+      pstable, addons, user_email, created_at)
+    VALUEs (v_app_id, 'v2',2, 'Enable Logplex', NULL, ''::hstore,
+      ''::hstore, '{}', v_user.email, NOW());
     
   RETURN QUERY SELECT * FROM app WHERE id = v_app_id;
    

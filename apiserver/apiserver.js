@@ -15,13 +15,13 @@ module.exports.createServer = function(opts) {
   app.debug = function(msg) {
     console.log(msg);
   };
-  
+
   var pgInstance = require('./apidb');
   app.db = require('./dbfacade')(pgInstance);
 
   var apiLets = getApiLets();
   apiLets.forEach(function(apiLetName) {
-    
+
     var apiLetManifest = require('./api/' + apiLetName);
     Object.keys(apiLetManifest).forEach(function(key) {
       var routeInfo = apiLetManifest[key];
@@ -30,21 +30,20 @@ module.exports.createServer = function(opts) {
   });
 
   //yuck
-  app.start = function() {
+  app.start = function(cb) {
     app.db.init(function(err) {
       if(err) {
-        console.log(err);
-        process.exit(1);
+        throw err;
       } else {
         require('./jobgiver')(app);
-        app.listen(opts.port);
+        app.listen(opts.port, cb);
         console.log('Listening on http port ' + opts.port);
       }
     });
   };
 
-  app.stop = function() {
-    app.close();
+  app.stop = function(cb) {
+    app.close(cb);
     pgInstance.end();
   };
 
