@@ -45,12 +45,12 @@ BEGIN
 
   INSERT INTO provision_job 
     (template, name, dyno_id, rez_id, env_vars, attached, pty, 
-      command, command_args, mounts, created_at)
+      command, command_args, mounts, created_at, next_action)
     VALUES ('run','run',
     v_dyno_id, v_rez_id,
     v_env_vars, true, 
     true, v_command,
-    v_command_args, v_mounts, NOW())
+    v_command_args, v_mounts, NOW(), 'start')
     RETURNING id INTO v_job_id;
 
   RETURN QUERY SELECT * FROM provision_job WHERE id = v_job_id LIMIT 1;

@@ -104,12 +104,12 @@ tasks.populateJobsOutstanding = function(callback) {
 
       //sign slug urls
       _(row.mounts).forEach(function(mountValue, mountKey){
-        if(!mountValue) return callback(new Error('Mount key ' + mountKey + ' does not have value'));
+        if(!mountValue) return
         row.mounts[mountKey] = processMount(mountValue);
       });
 
       _(row.env_vars).forEach(function(mountValue, mountKey){
-        if(!mountValue) return callback(new Error('Mount key ' + mountKey + ' does not have value'));
+        if(!mountValue) return
         row.env_vars[mountKey] = processMount(mountValue);
       });
     });
@@ -196,7 +196,7 @@ tasks.markJobsDistributed = function(cb) {
 };
 
 tasks.waitPeriod = function(cb) {
-    //give dyno nodes 250ms to check back in for jobs
+  //give dyno nodes 250ms to check back in for jobs
   var self = this;
   setTimeout(function() { 
     self.assignedHosts = [];

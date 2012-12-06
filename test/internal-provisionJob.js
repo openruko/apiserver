@@ -98,6 +98,54 @@ describe('internal provisionJob', function(){
         });
       });
     });
+    
+
+    it('it should create a "start" job when running a one-off process', function(done){
+      request.post({
+        url: base + '/apps/myApp/ps',
+        qs: {
+          command: 'bash'
+        }
+      }, function(err, resp, body){
+        if(err) return done(err);
+        expect(body.slug).to.exist;
+        expect(body.command).to.be.equal('bash');
+        expect(body.upid).to.be.exist;
+        expect(body.process).to.be.equal('run.1');
+        expect(body.action).to.be.equal('complete');
+        expect(body.rendezvous_url).to.include('tcp://localhost:');
+        expect(body.type).to.be.equal('Ps');
+        expect(body.elapsed).to.be.equal(0);
+        expect(body.attached).to.be.true;
+        expect(body.transitioned_at).to.exist;
+        expect(body.state).to.starting;
+        done()
+      });
+      setTimeout(function(){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(1);
+          expect(data[0].instance_id).to.be.null;
+          expect(data[0].dyno_id).to.exist;
+          expect(data[0].rez_id).to.exist;
+          expect(data[0].template).to.be.equal('run');
+          expect(data[0].name).to.be.equal('run');
+          expect(data[0].env_vars).to.be.deep.equal({});
+          expect(data[0].attached).to.be.true;
+          expect(data[0].pty).to.be.true;
+          expect(data[0].command).to.be.equal('bash');
+          expect(data[0].command_args).to.be.deep.equal([]);
+          expect(data[0].logplex_id).to.be.null;
+          expect(data[0].mounts['/app']).to.be.null;
+          expect(data[0].created_at).to.exist;
+          expect(data[0].next_action).to.be.equal('start');
+          expect(data[0].distributed_at).to.be.null;
+          expect(data[0].distributed_to).to.be.null;
+          expect(data[0].kill_at).to.be.null;
+          expect(data[0].kill_method).to.be.null;
+        });
+      }, 30);
+    });
   });
 
   describe('When executing a git action', function(){
@@ -327,5 +375,6 @@ describe('internal provisionJob', function(){
   });
 });
 
-// TODO run-off command
+// TODO stop process with type `web` and with process `web.1`
+// TODO run-off command with env_vars
 // TODO workers
