@@ -13,6 +13,12 @@ module.exports = {
     payloadSource: 'query',
     method: 'POST',
     okayCode: 200,
+    alternativePgFunction: 'scaleInstances',
+    before: function(cb) {
+      var payload = this.requestPayload;
+      payload.qty = 0;
+      cb();
+    },
     after: function(cb){
       this.responsePayload = "ok";
       cb();
