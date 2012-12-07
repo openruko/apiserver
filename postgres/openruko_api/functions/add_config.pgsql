@@ -7,9 +7,6 @@ DECLARE
   v_existing_env_vars hstore;
   v_new_env_vars hstore;
   v_new_descr text;
-  v_new_name text;
-  v_release_id integer;
-  v_new_seq_count integer;
   v_user oruser%rowtype;
 BEGIN
   
@@ -28,8 +25,6 @@ BEGIN
   -- friendly message shows new keys add for release description
   v_new_descr := 'Add ' || array_to_string(akeys(p_env_vars),', ');
 
-  v_new_seq_count := (v_last_release.seq_count + 1);
-  v_new_name := 'v' || v_new_seq_count::text;
 
   -- store the new release, we never overwrite previous releases
   PERFORM create_release(p_app_id, v_user.email, v_new_descr, v_last_release.commit,

@@ -7,13 +7,13 @@ p_slug_id text,
 p_env hstore,
 p_pstable hstore,
 p_addons text[])
+-- TODO addons is not used
 RETURNS integer AS
 $BODY$
 DECLARE
   v_last_release release%rowtype;
   v_new_seq_count integer;
   v_new_name text;
-  v_temp_table_id text;
   v_required_instances text[];
   v_release_id integer;
 BEGIN
@@ -31,8 +31,6 @@ BEGIN
       '{}'::text[], v_new_seq_count, v_new_name, 
       p_user_email, NOW())
       RETURNING id INTO v_release_id;
-
-  v_temp_table_id := (trunc(random() * 1000 + 1))::text;
 
   CREATE TEMP TABLE bad_instances ON COMMIT DROP AS 
     SELECT * FROM boss_instance WHERE 

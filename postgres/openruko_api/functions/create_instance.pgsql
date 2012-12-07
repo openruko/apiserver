@@ -8,20 +8,9 @@ DECLARE
   v_next_count integer;
   v_instance_name text;
   v_instance_id text;
-  v_release release%rowtype;
-  v_instance_dyno_id uuid;
-  v_command text;
-  v_bucket text;
-  v_mounts hstore;
-  v_command_args_parts text[];
-  v_command_args text[];
-  v_job_id integer;
   v_logplex_id uuid;
 BEGIN
 
-  SELECT * FROM release WHERE app_id = p_app_id
-    ORDER BY id DESC LIMIT 1 INTO v_release;
-  
   SELECT COUNT(id) FROM instance WHERE name LIKE p_name || '.%'
     AND retired = false
     AND app_id = p_app_id
@@ -50,7 +39,7 @@ BEGIN
       p_name, p_command, v_logplex_id, false)
     RETURNING id INTO v_instance_id;
 
-  RETURN v_instance_id; /* v_job_id; */
+  RETURN v_instance_id;
    
 END;
 $BODY$

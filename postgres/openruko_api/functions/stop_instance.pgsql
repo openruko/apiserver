@@ -1,5 +1,6 @@
 CREATE OR REPLACE FUNCTION stop_instance
 (p_app_id integer, p_instance_id text)
+-- p_app_id not used
 RETURNS integer AS 
 $BODY$
 DECLARE

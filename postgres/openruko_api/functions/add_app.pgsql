@@ -3,7 +3,6 @@ CREATE OR REPLACE FUNCTION add_app
 RETURNS SETOF app AS
 $BODY$
 DECLARE
-  v_affected_count integer;
   v_already_exists boolean;
   v_app_id integer;
   v_base_domain text;
