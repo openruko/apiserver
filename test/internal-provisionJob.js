@@ -522,8 +522,29 @@ describe('internal provisionJob', function(){
       });
     });
   });
+
+
+  it.skip('with a commit containing two processes, 2 instances are started', function(done){
+    var instanceId;
+    var pstable = [
+      "pstable:",
+       "  web: node server.js",
+       "  worker: node worker.js",
+    ].join('\n');
+    preReceiveMock('myApp', pstable, function(){
+      dynohostMock.getJobs(function(err, data){
+        if(err) return done(err);
+        // it should create one "start" job'
+        expect(data).to.have.length(2);
+        expect(data[0]).to.be.startJob;
+        expect(data[0].name).to.be.equal('web.1');
+        console.log(data[1])
+        done();
+      });
+    });
+  });
 });
 
 // TODO fix stop process `web.1`
 // TODO fix restart process `web.1`
-// TODO workers
+// TODO fix workers
