@@ -98,7 +98,7 @@ describe('internal provisionJob', function(){
         });
       });
     });
-    
+
 
     it('it should create a "start" job when running a one-off process', function(done){
       request.post({
@@ -229,7 +229,7 @@ describe('internal provisionJob', function(){
       });
     });
 
-    describe('when stopping the instance', function(){
+    describe('when stopping processes with type web', function(){
       beforeEach(function(done){
         request.post({
           url: base + '/apps/myApp/ps/stop',
@@ -245,6 +245,67 @@ describe('internal provisionJob', function(){
           if(err) return done(err);
           expect(data).to.have.length(1);
           expect(data[0]).to.be.killJob;
+          done();
+        });
+      });
+    });
+
+    describe('when stopping process with type worker', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/stop',
+          qs: {
+            type: 'worker'
+          },
+          json: false
+        }, done);
+      });
+
+      it('should not create provision job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.be.empty;
+          done();
+        });
+      });
+    });
+
+    describe.skip('when stopping the process', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/stop',
+          qs: {
+            ps: 'web.1'
+          },
+          json: false
+        }, done);
+      });
+
+      it('should create one "kill" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(1);
+          expect(data[0]).to.be.killJob;
+          done();
+        });
+      });
+    });
+
+    describe('when stopping a bad process', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/stop',
+          qs: {
+            ps: 'toto.1'
+          },
+          json: false
+        }, done);
+      });
+
+      it('should not create provision job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.be.empty;
           done();
         });
       });
@@ -375,6 +436,6 @@ describe('internal provisionJob', function(){
   });
 });
 
-// TODO stop process with type `web` and with process `web.1`
+// TODO fix stop process `web.1`
 // TODO run-off command with env_vars
 // TODO workers
