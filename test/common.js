@@ -10,6 +10,11 @@ exports.defaultUser = {
   isSuperUser: false
 };
 
+exports.defaultKey = {
+  sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKwNiuklprOgtXBOyS10l40bGdztXQg9nKT5a+bwEmbyuXMOSa49c5YzXgGcEdhtQ2CbJ9GK9URywPD3SX0JgFQ588tT5E75ZhbSXgRQLipwDZF5g4RaKuZwpJ3ifb9TVl/M0gh8oVFCyZdLj4NHbLg1qG46oeKqKmBBuNPjxC2Ki9yiA3aFe1mKNxivDWf/c44cvYRC/D4/Ckn7Iql1xSpMXHvPzRRYjKElHhZlHuBRp1aezb+WxN11zHg9b+xsN5t7EjShVyGmld5LpwG7ZCqTUvy8LbFCKEELpr1/5atASb4d3vNYZ77lLb9Mx0GozJ5nYlAdLqXbhMvT6bTAyj me@hostname',
+  fingerprint: '6cbcf7c2b4703cd2b49b2c49878c403e'
+}
+
 var app;
 exports.startServer = function(cb){
   if(app) return cb();
