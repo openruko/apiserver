@@ -8,9 +8,9 @@ exports.handleGitCommand = function(appName, cb){
   }, cb);
 };
 
-exports.lookupUserByPublicKey = function(fingerprint){
+exports.lookupUserByPublicKey = function(fingerprint, cb){
   var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
-  request.post({
+  request({
     url: base + '/internal/lookupUserByPublicKey?fingerprint=' + fingerprint
   }, cb);
 };
