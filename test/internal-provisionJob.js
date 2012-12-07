@@ -227,6 +227,54 @@ describe('internal provisionJob', function(){
           done();
         });
       });
+
+      it.skip('it should create a "start" job when running a one-off process', function(done){
+        request.post({
+          url: base + '/apps/myApp/ps',
+          qs: {
+            command: 'bash'
+          }
+        }, function(err, resp, body){
+          if(err) return done(err);
+          expect(body.slug).to.exist;
+          expect(body.command).to.be.equal('bash');
+          expect(body.upid).to.be.exist;
+          expect(body.process).to.be.equal('run.1');
+          expect(body.action).to.be.equal('complete');
+          expect(body.rendezvous_url).to.include('tcp://localhost:');
+          expect(body.type).to.be.equal('Ps');
+          expect(body.elapsed).to.be.equal(0);
+          expect(body.attached).to.be.true;
+          expect(body.transitioned_at).to.exist;
+          expect(body.state).to.starting;
+          done()
+        });
+        setTimeout(function(){
+          dynohostMock.getJobs(function(err, data){
+            if(err) return done(err);
+            console.log('>>> data', data);
+            expect(data).to.have.length(1);
+            expect(data[0].instance_id).to.be.null;
+            expect(data[0].dyno_id).to.exist;
+            expect(data[0].rez_id).to.exist;
+            expect(data[0].template).to.be.equal('run');
+            expect(data[0].name).to.be.equal('run');
+            expect(data[0].env_vars).to.be.deep.equal({});
+            expect(data[0].attached).to.be.true;
+            expect(data[0].pty).to.be.true;
+            expect(data[0].command).to.be.equal('bash');
+            expect(data[0].command_args).to.be.deep.equal([]);
+            expect(data[0].logplex_id).to.be.null;
+            expect(data[0].mounts['/app']).to.be.null;
+            expect(data[0].created_at).to.exist;
+            expect(data[0].next_action).to.be.equal('start');
+            expect(data[0].distributed_at).to.be.null;
+            expect(data[0].distributed_to).to.be.null;
+            expect(data[0].kill_at).to.be.null;
+            expect(data[0].kill_method).to.be.null;
+          });
+        }, 30);
+      });
     });
 
     describe('when stopping processes with type web', function(){
@@ -250,12 +298,12 @@ describe('internal provisionJob', function(){
       });
     });
 
-    describe('when stopping process with type worker', function(){
+    describe('when stopping process with a bad type', function(){
       beforeEach(function(done){
         request.post({
           url: base + '/apps/myApp/ps/stop',
           qs: {
-            type: 'worker'
+            type: 'badtype'
           },
           json: false
         }, done);
@@ -337,7 +385,7 @@ describe('internal provisionJob', function(){
       });
     });
 
-    describe('when restarting the instance', function(){
+    describe('when restarting  processes with type web', function(){
       beforeEach(function(done){
         request.post({
           url: base + '/apps/myApp/ps/restart',
@@ -359,6 +407,73 @@ describe('internal provisionJob', function(){
           expect(data[0].mounts['/app']).to.exist;
           expect(data[0].name).to.be.equal('web.1');
           expect(data[1]).to.be.killJob;
+          done();
+        });
+      });
+    });
+
+    describe.skip('when restarting  processes with a bad type', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/restart',
+          qs: {
+            type: 'badtype'
+          },
+          json: false
+        }, done);
+      });
+
+      it('should not create provision job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.be.empty;
+          done();
+        });
+      });
+    });
+
+    describe('when restarting  the processes', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/restart',
+          qs: {
+            ps: 'web.1'
+          },
+          json: false
+        }, done);
+      });
+
+      it('should create one "kill" job and one "start" job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(2);
+          expect(data[0]).to.be.startJob;
+          expect(data[0].env_vars).to.be.deep.equal({
+            PATH: 'bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
+          });
+          expect(data[0].mounts['/app']).to.exist;
+          expect(data[0].name).to.be.equal('web.1');
+          expect(data[1]).to.be.killJob;
+          done();
+        });
+      });
+    });
+
+    describe.skip('when restarting a bad process', function(){
+      beforeEach(function(done){
+        request.post({
+          url: base + '/apps/myApp/ps/restart',
+          qs: {
+            ps: 'toto'
+          },
+          json: false
+        }, done);
+      });
+
+      it('should should not create provision job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.be.empty;
           done();
         });
       });
@@ -437,5 +552,6 @@ describe('internal provisionJob', function(){
 });
 
 // TODO fix stop process `web.1`
-// TODO run-off command with env_vars
+// TODO fix restart process `web.1`
+// TODO fix run-off command with env_vars
 // TODO workers
