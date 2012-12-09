@@ -11,6 +11,7 @@ CREATE TABLE instance
   logplex_id uuid,
   boss_dyno_id text,
   retired boolean,
+  port integer,
   CONSTRAINT instance_pkey PRIMARY KEY (id )
 )
 WITH (
