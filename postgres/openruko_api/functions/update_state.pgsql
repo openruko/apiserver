@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION update_state
-(p_instance_id text, p_dyno_id text, p_state text)
+(p_instance_id text, p_dyno_id text, p_state text, p_port integer)
 RETURNS integer AS
 $BODY$
 DECLARE
@@ -11,6 +11,11 @@ BEGIN
  
   IF (p_state = 'completed' OR p_state = 'errored') THEN
     UPDATE instance SET retired = true
+      WHERE id = p_instance_id;
+  END IF;
+
+  IF (p_state = 'running') THEN
+    UPDATE instance SET port = p_port
       WHERE id = p_instance_id;
   END IF;
 
