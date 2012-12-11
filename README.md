@@ -63,6 +63,10 @@ sudo -u postgres createuser -s -P -U postgres
 # enter the password, for exemple openruko
 cd postgres
 ./setup
+# Database name: openruko
+# Your name: 
+# Your email: 
+# Desired password (will be hashed):
 cd ..
 ```
 
