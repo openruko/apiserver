@@ -16,4 +16,8 @@ CREATE TABLE instance
 WITH (
   OIDS=FALSE
 );
+
+CREATE INDEX name_idx ON instance (name);
+CREATE INDEX retired_idx ON instance (retired);
+
 -- vim: set filetype=pgsql :
