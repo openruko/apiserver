@@ -1,4 +1,5 @@
 var request = require('request');
+var querystring = require('querystring');
 var conf = require('../conf');
 var logplexBaseUrl = 'http://' + conf.logplex.hostname + ':' + conf.logplex.webPort + '/';
 
@@ -31,7 +32,15 @@ module.exports = {
           return;
         }
         var url = logplexBaseUrl + 'sessions/' + result.body.id;
-        self.responsePayload = url;
+
+        var options = self.requestPayload;
+        var qs = querystring.stringify({
+          tail: options.tail,
+          num: options.num,
+          ps: options.ps,
+          source: options.source
+        });
+        self.responsePayload = url + '?' + qs;
         cb();
       });
 

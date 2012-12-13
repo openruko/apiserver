@@ -63,6 +63,10 @@ sudo -u postgres createuser -s -P -U postgres
 # enter the password, for exemple openruko
 cd postgres
 ./setup
+# Database name: openruko
+# Your name: 
+# Your email: 
+# Desired password (will be hashed):
 cd ..
 ```
 
@@ -78,6 +82,7 @@ these must be configured as part of the process start - e.g. configured in
 supervisord or as part of boot script see ./apiserver/conf.js
 
 * PG_USER - Your login name, unless you set something else.
+* PG_PASSWORD - Your postgresql password, for exemple openruko
 * S3_KEY - You need an Amazon S3 account to store repos and slug archive
 * S3_SECRET - You need an Amazon S3 account to store repos and slug archive
 * S3_BUCKET - You need an Amazon S3 account to store repos and slug archive
@@ -99,6 +104,27 @@ S3_BUCKET=$YOUR_AMAZON_S3_BUCKET
 EOF
 
 foreman start
+```
+
+## Test
+
+To test apiserver, first you need to setup a test database.
+
+```
+cd postgres
+./setup
+# database name: openruko_test
+# your name: test
+# your email: test@test.com
+# password: test
+```
+
+Make sure your have `PG_USER`, `PG_PASSWORD` in your env variables.
+
+Now run the tests
+
+```
+npm test
 ```
 
 ## Help and Todo

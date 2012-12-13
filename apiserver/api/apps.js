@@ -23,7 +23,7 @@ module.exports = {
       this.responsePayload = {};
       cb();
     },
-    errorCode: 422
+    errorCode: 404
   },
   getApps: {
     routePath: '/apps',
@@ -48,6 +48,7 @@ module.exports = {
     okayCode: 200,
     errorCode: 404
   },
+  // FIXME why this here, and in domains.js
   getDomains: {
     routePath: '/apps/:appName/domains',
     payloadSource: 'params',
@@ -56,4 +57,7 @@ module.exports = {
     okayCode: 200,
     errorCode: 404
   }
+  // TODO rename an app
+  // TODO transfer an app
+  // TODO toggle maintenance mode
 };

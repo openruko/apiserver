@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION push_release
 (p_user_id integer, p_app_id integer, p_user_email text, p_commit text, 
 p_slug_id text, p_env_vars hstore, p_pstable hstore)
+-- TODO p_user_id not used
 RETURNS SETOF release AS
 $BODY$
 DECLARE

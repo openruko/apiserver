@@ -11,6 +11,7 @@ elapsed integer,
 type text,
 attached boolean,
 pretty_state text,
+-- TODO pretty_state is not used
 state text,
 transitioned_at timestamp with time zone) AS
 $BODY$
