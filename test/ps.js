@@ -95,6 +95,31 @@ describe('ps API', function(){
         });
       });
 
+      describe.skip('when updating the repo', function(){
+        beforeEach(function(done){
+          // I need to have the instance_id of the first dyno in order to kill it
+          dynohostMock.getJobs(function(err, data){
+            preReceiveMock('myApp', function(err){
+              dynohostMock.updateState('myApp', data[0].dyno_id, data[0].instance_id, 'completed', done);
+            });
+          });
+        });
+
+        it('should return one instance when listing processes', function(done){
+          request({
+            url: base + '/apps/myApp/ps'
+          }, function(err, res, body){
+            if(err) return done(err);
+            expect(res).to.have.status(200);
+            expect(body).to.have.length(1);
+            expect(body[0].app_name).to.be.equal('web.2');
+            expect(body[0].command).to.be.equal('node server.js');
+            expect(body[0].process).to.be.equal('web.2');
+            done();
+          });
+        });
+      });
+
       it('should return one instance when listing processes', function(done){
         request({
           url: base + '/apps/myApp/ps'

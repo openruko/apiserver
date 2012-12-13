@@ -225,6 +225,20 @@ describe('internal provisionJob', function(){
       }, 30);
     });
 
+    describe.skip('when updating the repo', function(){
+      beforeEach(function(done){
+        preReceiveMock('myApp', done);
+      });
+
+      it('should create one `start` and one `kill` job', function(done){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          expect(data).to.have.length(2);
+          done();
+        });
+      });
+    });
+
     describe('when changing the config', function(){
       beforeEach(function(done){
         common.addConfig(done)
