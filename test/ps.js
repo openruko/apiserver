@@ -95,7 +95,7 @@ describe('ps API', function(){
         });
       });
 
-      describe.skip('when updating the repo', function(){
+      describe('when updating the repo', function(){
         beforeEach(function(done){
           // I need to have the instance_id of the first dyno in order to kill it
           dynohostMock.getJobs(function(err, data){
@@ -112,9 +112,9 @@ describe('ps API', function(){
             if(err) return done(err);
             expect(res).to.have.status(200);
             expect(body).to.have.length(1);
-            expect(body[0].app_name).to.be.equal('web.2');
+            expect(body[0].app_name).to.be.equal('web.1');
             expect(body[0].command).to.be.equal('node server.js');
-            expect(body[0].process).to.be.equal('web.2');
+            expect(body[0].process).to.be.equal('web.1');
             done();
           });
         });
@@ -141,7 +141,7 @@ describe('ps API', function(){
         });
       });
 
-      ['starting', 'listening', 'running'].forEach(function(state){
+      ['starting', 'listening', 'running', 'completed', 'errored'].forEach(function(state){
         describe('updating the state to ' + state, function(){
           beforeEach(function(done){
             dynohostMock.getJobs(function(err, data){
@@ -162,28 +162,6 @@ describe('ps API', function(){
           });
         });
       });
-
-      ['completed', 'errored'].forEach(function(state){
-        describe('updating the state to ' + state, function(){
-          beforeEach(function(done){
-            dynohostMock.getJobs(function(err, data){
-              dynohostMock.updateState('myApp', data[0].dyno_id, data[0].instance_id, state, done);
-            });
-          });
-
-          // TODO check this is the behaviour of Heroku
-          it('it should return empty when listing processes', function(done){
-            request({
-              url: base + '/apps/myApp/ps'
-            }, function(err, res, body){
-              if(err) return done(err);
-              expect(res).to.have.status(200);
-              expect(body).to.be.empty;
-              done();
-            });
-          });
-        });
-      })
 
       describe('when stopping the instance', function(){
         beforeEach(function(done){

@@ -225,7 +225,7 @@ describe('internal provisionJob', function(){
       }, 30);
     });
 
-    describe.skip('when updating the repo', function(){
+    describe('when updating the repo', function(){
       beforeEach(function(done){
         preReceiveMock('myApp', done);
       });
