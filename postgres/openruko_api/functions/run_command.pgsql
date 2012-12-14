@@ -8,7 +8,6 @@ DECLARE
   v_mounts hstore;
   v_env_vars hstore;
   v_dyno_id text;
-  v_bucket text;
   v_rez_id text;
   v_job_id integer;
   v_command text;
@@ -20,9 +19,7 @@ BEGIN
   SELECT * FROM release WHERE app_id = p_app_id ORDER BY id
     DESC LIMIT 1 INTO v_last_release;
 
-  v_bucket = (SELECT value FROM settings WHERE key = 's3bucket');
-
-  v_mounts = hstore('/app','s3get://' || v_bucket || '/slugs/' || p_app_id ||
+  v_mounts = hstore('/app','s3get://{{S3_BUCKET}}/slugs/' || p_app_id ||
     '_' || v_last_release.slug_id || '.tgz');
 
   v_dyno_id = generate_uuid();
