@@ -7,7 +7,14 @@ $BODY$
 DECLARE
   v_crypt_password text;
   v_user_id integer;
+  v_already_exists boolean;
 BEGIN
+
+  SELECT EXISTS(SELECT id FROM oruser WHERE email = p_email) INTO v_already_exists;
+
+  IF v_already_exists THEN
+    RAISE EXCEPTION 'Sorry, a user with that email address already exists or the email was invalid.';
+  END IF;
 
   v_crypt_password := crypt(p_password,gen_salt('md5'));
 

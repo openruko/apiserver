@@ -95,6 +95,19 @@ module.exports = {
     okayCode: 200
   },
 
+  addUser: {
+    routePath: '/internal/user',
+    payloadSource: 'body',
+    method: 'POST',
+    okayCode: 200,
+    errorCode: 422,
+    after: function(cb){
+      var dbResponse = this.responsePayload.rows[0];
+      this.responsePayload = "Congrat " + dbResponse.name + ". Welcome on Openruko ;)"
+      cb();
+    }
+  },
+
   // TODO is it used ?
   getAppMetadata: {
     routePath : '/internal/:appName/metadata',
