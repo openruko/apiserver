@@ -2,6 +2,7 @@ var hstore = require('node-postgres-hstore');
 var db = require('../apidb');
 var dbfacade= require('../dbfacade')(db);
 var async = require('async');
+var conf = require('../conf');
 
 module.exports = {
   runCommand: {
@@ -31,7 +32,7 @@ module.exports = {
               upid: job.dyno_id,
               process: 'run.1',
               action: 'complete',
-              rendezvous_url: 'tcp://localhost:4321/' + job.rez_id,
+              rendezvous_url: 'tcp://' + conf.apiserver.hostname + ':' + conf.apiserver.rendezvous.port + '/' + job.rez_id,
               type: 'Ps',
               elapsed: 0,
               attached: true,

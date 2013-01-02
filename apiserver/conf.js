@@ -17,10 +17,19 @@ module.exports = {
     //reposBucket: env.S3_REPOS_BUCKET || 'openruko_repos',
     //slugsBucket: env.S3_SLUGS_BUCKET || 'openruko_slugs'
   },
+  dynohost: {
+    rendezvous: {
+      port: env.DYNOHOST_RENDEZVOUS_PORT || 4000,
+    }
+  },
   apiserver: {
     protocol: env.APISERVER_PROTOCOL || 'http',
     hostname: env.APISERVER_HOST || 'localhost',
-    port: env.APISERVER_PORT || 5000
+    port: env.APISERVER_PORT || 5000,
+    rendezvous: {
+      port: env.APISERVER_RENDEZVOUS_PORT || 4321,
+    }
+
   },
   pg: {
     database: env.PG_DATABASE || 'openruko',
