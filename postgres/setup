@@ -88,9 +88,12 @@ if [ "$1" != "--functions-only" ]; then
 
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('$oruser_email','$oruser_name','$oruser_password')"
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('admin@dev.null','superuser','superuser', true, '$superUserKey')"
-  echo "API Super key is: $superUserKey"
+  echo ""
+  echo "Note the following environment variable:"
   echo "^^ (set this in gitmouth and dyno hosts' env vars - see README.md)"
+  echo "APISERVER_KEY=$superUserKey"
 
 fi
 
+echo ""
 echo "Database $dbName setup complete"
