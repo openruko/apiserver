@@ -86,6 +86,20 @@ done;
 
 if [ "$1" != "--functions-only" ]; then
 
+  # Check if this is a vagrant instance and set the Slot Box domain accordingly
+  if grep "^vagrant:" /etc/passwd; then
+    base_domain="slotbox.local"
+  else
+    base_domain="slotbox.es"
+  fi
+
+  psql "$dbName" -o /dev/null -nq -c "DO \$BODY\$ BEGIN 
+                                      IF NOT EXISTS (SELECT * FROM openruko_data.settings WHERE key = 'base_domain') THEN
+                                        INSERT INTO openruko_data.settings (key, value) VALUES('base_domain', '$base_domain');
+                                      END IF;
+                                      END;
+                                      \$BODY\$"
+
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('$oruser_email','$oruser_name','$oruser_password')"
   psql "$dbName" -o /dev/null -nq -c "SET search_path TO openruko_data,public; SELECT * FROM openruko_api.add_user('admin@dev.null','superuser','superuser', true, '$superUserKey')"
   echo ""
