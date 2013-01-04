@@ -168,9 +168,7 @@ callPostgresFunction = function(cb) {
 
   var self = this;
 
-  var pgFunction = self.routeInfo.alternativePgFunction || 
-    self.routeKey;
-
+  var pgFunction = self.routeInfo.alternativePgFunction || self.routeKey;
 
   self.db.exec(pgFunction, self.requestPayload, function(dbError, dbResult) {
     if(dbError) return cb(dbError);
