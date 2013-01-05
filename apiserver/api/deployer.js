@@ -14,7 +14,7 @@ module.exports = {
     handler: function(cb) {
       var self = this;
 
-      // This is the commans that is run on the build dyno. It's not strictly a git hook as it
+      // This is the command that is run on the build dyno. It's not strictly a git hook as it
       // does the aactual fetching itself. There doesn't seem to be any suitable hooks that can
       // actually deal with post-fetching. Well there's post-merge, but that has to be run manually
       // after a git fetch anyway.
@@ -37,8 +37,8 @@ module.exports = {
             if(err) return callback(err);
 
             var job = dbResult.rows[0];
+            console.log(job);
             if(job.distributed_to) {
-
               // These details are then used by the CLI cient to open a real-time socket
               // to the dyno.
               result  = {
