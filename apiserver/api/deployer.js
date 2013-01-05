@@ -4,7 +4,7 @@ var async = require('async');
 
 module.exports = {
 
-  destroyApp: {
+  deployApp: {
     routePath : '/apps/:appName/deploy',
     payloadSource: 'query',
     method: 'PUT',
