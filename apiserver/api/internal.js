@@ -42,52 +42,6 @@ module.exports = {
       cb();
     }
   },
-  handleGitCommand: {
-    routePath: '/internal/:appName/gitaction',
-    payloadSource: 'query',
-    method: 'POST',
-    okayCode: 200,
-    before: function(cb) {
-      this.requestPayload.command = '/usr/bin/' + this.requestPayload.command;
-      cb();
-    },
-    after: function(cb) {
-      var timesQueried = 0;
-      var jobId = this.responsePayload.rows[0].id;
-      var result;
-      var self = this;
-
-      async.whilst(function() {
-        return (!result) && timesQueried < 20;
-      }, function(callback) {
-        dbfacade.exec('getJob', { jobId: jobId }, function(err, dbResult) {
-          timesQueried++;
-          if(err) return callback(err);
-
-          var job = dbResult.rows[0];
-          if(job.distributed_to) {
-            result = { 
-              host: job.distributed_to, 
-              dyno_id: job.dyno_id,
-              rez_id: job.rez_id
-            };
-          }
-          if(result) {
-            callback();
-          } else {
-            setTimeout(callback, 500);
-          }
-        });
-      }, function(err) {
-        if(err || !result) {
-          console.log('Unable to assign job');
-          return cb({ error: 'job not assigned' });
-        }
-        self.responsePayload = result;
-        cb();
-      });
-    }
-  },
   updateState: {
     routePath: '/internal/updatestate',
     payloadSource: 'body',
