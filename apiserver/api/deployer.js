@@ -15,7 +15,10 @@ module.exports = {
       var self = this;
 
       // This isn't needed as we're doing `git pull` now
-      this.requestPayload.command = '/usr/bin/git-recieve-pack';
+      this.requestPayload.command = '/app/hooks/fetch-repo ' + this.requestPayload.app.github_url;
+      // this.requestPayload.commandArgs = ["pull", this.requestPayload.app.github_url];
+
+      console.log(this.requestPayload);
 
       // var appName = requestPayload.appName;
       // var githubUrl = requestPayload.app.github_url;
@@ -30,19 +33,31 @@ module.exports = {
 
         // Get connection details to the build dyno
         async.whilst(function() {
-          return (!result) && timesQueried < 20;
+          return !(result || timesQueried > 15);
         }, function(callback) {
           dbfacade.exec('getJob', { jobId: jobId }, function(err, dbResult) {
             timesQueried++;
             if(err) return callback(err);
 
             var job = dbResult.rows[0];
+            console.log(job);
             if(job.distributed_to) {
-              result = {
-                host: job.distributed_to,
-                dyno_id: job.dyno_id,
-                rez_id: job.rez_id
+              result  = {
+                slug: "000000_00000",
+                command: self.requestPayload.command,
+                upid: job.dyno_id,
+                process: 'dyno.' + job.dyno_id,
+                action: 'complete',
+                rendezvous_url: 'tcp://slotbox.local:4321/' + job.rez_id,
+                type: 'Ps',
+                elapsed: 0,
+                attached: true,
+                transitioned_at: new Date(),
+                state: 'starting'
               };
+              var rezMap = require('../rendezpass');
+              rezMap.addMapping(job.rez_id, job.distributed_to, job.dyno_id);
+
             }
             if(result) {
               callback();

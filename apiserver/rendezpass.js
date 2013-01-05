@@ -24,7 +24,7 @@ var server = tls.createServer(options, function(s) {
     var strData = data.toString();
     var dataParts = strData.toString().split('\n');
     var rez_id = dataParts[0];
-    
+
     var payload = rendezMap[rez_id];
 
     s.write('\n');
@@ -38,7 +38,7 @@ var server = tls.createServer(options, function(s) {
         s.write(data);
       });
       s.on('data', function(data) {
-        console.log(data.toString())
+        console.log(data.toString());
         secureClient.write(data);
       });
     });
@@ -46,4 +46,4 @@ var server = tls.createServer(options, function(s) {
   });
 });
 
-server.listen(conf.apiserver.rendezvous.port)
+server.listen(conf.apiserver.rendezvous.port);

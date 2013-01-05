@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION handle_git_command
-(p_app_id integer, p_app_name text, p_api_key text, p_command text)
+(p_app_id integer, p_app_name text, p_api_key text, p_command text, p_command_args text[])
 RETURNS SETOF provision_job AS 
 $BODY$
 DECLARE
@@ -12,7 +12,6 @@ DECLARE
   v_job_id integer;
   v_base_host text;
   v_base_protocol text;
-  v_command_args text[];
   v_app app%rowtype;
 BEGIN
 
@@ -31,8 +30,6 @@ BEGIN
 
   v_dyno_id = generate_uuid();
   v_rez_id = generate_uuid();
-  
-  v_command_args = array['/app'];
 
   v_env_vars = hstore('repo_put_url', 's3put://' || v_bucket || '/repos/' || p_app_id || '.tgz');
 
@@ -55,7 +52,7 @@ BEGIN
     v_dyno_id, v_rez_id,
     v_env_vars, true, 
     false, p_command,
-    v_command_args, v_mounts, NOW(), 'start')
+    p_command_args, v_mounts, NOW(), 'start')
     RETURNING id INTO v_job_id;
 
   RETURN QUERY SELECT * FROM provision_job WHERE id = v_job_id LIMIT 1;
