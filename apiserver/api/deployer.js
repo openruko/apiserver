@@ -16,12 +16,6 @@ module.exports = {
 
       // This isn't needed as we're doing `git pull` now
       this.requestPayload.command = '/app/hooks/fetch-repo ' + this.requestPayload.app.github_url;
-      // this.requestPayload.commandArgs = ["pull", this.requestPayload.app.github_url];
-
-      console.log(this.requestPayload);
-
-      // var appName = requestPayload.appName;
-      // var githubUrl = requestPayload.app.github_url;
 
       // Get a job to build the new slug
       dbfacade.exec('handleGitCommand', this.requestPayload, function(dbError, dbResult) {
@@ -40,7 +34,6 @@ module.exports = {
             if(err) return callback(err);
 
             var job = dbResult.rows[0];
-            console.log(job);
             if(job.distributed_to) {
               result  = {
                 slug: "000000_00000",
