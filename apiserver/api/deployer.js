@@ -14,7 +14,10 @@ module.exports = {
     handler: function(cb) {
       var self = this;
 
-      // This isn't needed as we're doing `git pull` now
+      // This is the commans that is run on the build dyno. It's not strictly a git hook as it
+      // does the aactual fetching itself. There doesn't seem to be any suitable hooks that can
+      // actually deal with post-fetching. Well there's post-merge, but that has to be run manually
+      // after a git fetch anyway.
       this.requestPayload.command = '/app/hooks/fetch-repo ' + this.requestPayload.app.github_url;
 
       // Get a job to build the new slug
@@ -35,6 +38,9 @@ module.exports = {
 
             var job = dbResult.rows[0];
             if(job.distributed_to) {
+
+              // These details are then used by the CLI cient to open a real-time socket
+              // to the dyno.
               result  = {
                 slug: "000000_00000",
                 command: self.requestPayload.command,
@@ -64,9 +70,6 @@ module.exports = {
             return cb({ error: 'job not assigned' });
           }
           self.responsePayload = result;
-
-          // Connect to the dyno, but how!?
-
           cb();
         });
       });
