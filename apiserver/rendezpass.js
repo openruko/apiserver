@@ -5,7 +5,7 @@
   * and dyno sockets. The classic examples are the API's /apps/:appName//run methods that attach
   * to a dyno and run arbitrary commands. Firstly the Heroku CLi client speaks to the API to get
   * connection details including the dyno_id, it then opens up a TCP socket to this Rendezvous
-  * server. This server then then connects input and output streams as if there was a direct
+  * server. This server then connects input and output streams as if there was a direct
   * connection.
  **/
 
