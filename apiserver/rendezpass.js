@@ -2,10 +2,10 @@
   * THE RENDEVOUS SERVER
   *
   * The Rendezvous server acts as a middle-man between clients that want to talk to dynos
-  * and dyno sockets. The classic examples are the API's /apps/:appName/run methods that attach
+  * and dyno sockets. The classic examples are the API's /apps/:appName//run methods that attach
   * to a dyno and run arbitrary commands. Firstly the Heroku CLi client speaks to the API to get
   * connection details including the dyno_id, it then opens up a TCP socket to this Rendezvous
-  * server. This server then connects input and output streams as if there was a direct
+  * server. This server then then connects input and output streams as if there was a direct
   * connection.
  **/
 
@@ -63,6 +63,7 @@ var server = tls.createServer(options, function(s) {
       s.on('close', function() {
         secureClient.destroySoon();
       });
+
     });
 
   });
