@@ -1,6 +1,17 @@
+/**
+  * THE RENDEVOUS SERVER
+  *
+  * The Rendezvous server acts as a middle-man between clients that want to talk to dynos
+  * and dyno sockets. The classic examples are the API's /apps/:appName/run methods that attach
+  * to a dyno and run arbitrary commands. Firstly the Heroku CLi client speaks to the API to get
+  * connection details including the dyno_id, it then opens up a TCP socket to this Rendezvous
+  * server. This server then connects input and output streams as if there was a direct
+  * connection.
+ **/
+
 var uuid = require('node-uuid');
 var tls = require('tls');
-var fs = require('fs')
+var fs = require('fs');
 var conf = require('./conf');
 
 var rendezMap = {};
@@ -10,7 +21,6 @@ module.exports.addMapping = function(rezid, dyno_hostname, dyno_id) {
    dyno_id: dyno_id
   };
 };
-
 
 var options = {
   key: fs.readFileSync('certs/server-key.pem'),
@@ -24,7 +34,7 @@ var server = tls.createServer(options, function(s) {
     var strData = data.toString();
     var dataParts = strData.toString().split('\n');
     var rez_id = dataParts[0];
-    
+
     var payload = rendezMap[rez_id];
 
     s.write('\n');
@@ -32,18 +42,28 @@ var server = tls.createServer(options, function(s) {
     // TODO localhost should be replaced by the right hostname
     var secureClient = tls.connect({ host: 'localhost', port: conf.dynohost.rendezvous.port }, function() {
       secureClient.write('xyz\n' + payload.dyno_id + '\n');
+
+      // Pass on data from dyno to Rendevous user
       secureClient.on('data', function(data) {
-        console.log(data.toString());
-        console.log(data.toString());
+        console.log("rendezvous user write:", data.toString());
         s.write(data);
       });
+
+      // Pass on data from Rendevous user to dyno
       s.on('data', function(data) {
-        console.log(data.toString())
+        if(!secureClient.writable) return;
+        console.log("dyno write:", data.toString());
         secureClient.write(data);
+      });
+
+      // Close connection to Rendevous user when dyno socket closes
+      secureClient.on('close', function() {
+        console.log('dyno socket closed, closing Rendevous user connection');
+        s.destroySoon();
       });
     });
 
   });
 });
 
-server.listen(conf.apiserver.rendezvous.port)
+server.listen(conf.apiserver.rendezvous.port);
