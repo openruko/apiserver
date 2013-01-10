@@ -45,21 +45,23 @@ var server = tls.createServer(options, function(s) {
 
       // Pass on data from dyno to Rendevous user
       secureClient.on('data', function(data) {
-        console.log("rendezvous user write:", data.toString());
         s.write(data);
       });
 
       // Pass on data from Rendevous user to dyno
       s.on('data', function(data) {
         if(!secureClient.writable) return;
-        console.log("dyno write:", data.toString());
         secureClient.write(data);
       });
 
-      // Close connection to Rendevous user when dyno socket closes
+      // Close connection to Rendevous user when user socket closes
       secureClient.on('close', function() {
-        console.log('dyno socket closed, closing Rendevous user connection');
         s.destroySoon();
+      });
+
+      // Close connection to Rendevous user when dyno socket closes
+      s.on('close', function() {
+        secureClient.destroySoon();
       });
     });
 
