@@ -1,11 +1,15 @@
 var express = require('./customexpress');
 var apiglue = require('./apiglue');
 var fs = require('fs');
-var path = require('path');
+var Path = require('path');
 
 module.exports.createServer = function(opts) {
+  var tls = {
+    key: fs.readFileSync(Path.join(__dirname, '../certs/server-key.pem')),
+    cert: fs.readFileSync(Path.join(__dirname, '../certs/server-cert.pem'))
+  };
 
-  var app = express.createServer();
+  var app = express.createServer(tls);
 
   app.configure(function() {
     app.use(express.bodyParser());
@@ -59,7 +63,7 @@ module.exports.createServer = function(opts) {
 module.exports.getApiLets = getApiLets;
 
 function getApiLets() {
-  var apiLetsPath = path.join(__dirname, 'api');
+  var apiLetsPath = Path.join(__dirname, 'api');
   var files = fs.readdirSync(apiLetsPath);
   var requireFiles = files.map(function(file) {
     return file.substring(0, file.length - 3);

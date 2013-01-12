@@ -41,7 +41,7 @@ exports.cleanDB = function(cb){
   app.db.exec('clean', null, cb);
 };
 
-var base = 'http://:' + exports.defaultUser.apiKey + '@localhost:5000';
+var base = 'https://:' + exports.defaultUser.apiKey + '@localhost:5000';
 exports.addApp = function(cb){
   request.post({
     url: base + '/apps',

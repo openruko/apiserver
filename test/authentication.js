@@ -11,7 +11,7 @@ describe('Authentication', function(){
   beforeEach(common.cleanDB);
 
   describe('without user', function(){
-    var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+    var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
     it('should not be authorized to access /apps', function(done){
       request({
         url: base + '/apps',
@@ -28,7 +28,7 @@ describe('Authentication', function(){
     beforeEach(common.addUser);
 
     describe('without key', function(){
-      var base = 'http://localhost:5000';
+      var base = 'https://localhost:5000';
       it('should not be authorized to access /apps', function(done){
         request({
           url: base + '/apps',
@@ -42,7 +42,7 @@ describe('Authentication', function(){
     });
 
     describe('with a wrong key', function(){
-      var base = 'http://:blablabla@localhost:5000';
+      var base = 'https://:blablabla@localhost:5000';
       it('should not be authorized to access /apps', function(done){
         request({
           url: base + '/apps',
@@ -56,7 +56,7 @@ describe('Authentication', function(){
     });
 
     describe('with a valid key', function(){
-      var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+      var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
       it('should be authorized to access /apps', function(done){
         request({
           url: base + '/apps',

@@ -59,7 +59,7 @@ describe('internal provisionJob', function(){
   beforeEach(common.addUser);
   beforeEach(common.addApp);
 
-  var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+  var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 
   describe('without a commit', function(){
     describe('when restarting an app', function(){

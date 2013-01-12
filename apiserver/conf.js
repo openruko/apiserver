@@ -23,7 +23,7 @@ module.exports = {
     }
   },
   apiserver: {
-    protocol: env.APISERVER_PROTOCOL || 'http',
+    protocol: env.APISERVER_PROTOCOL || 'https',
     hostname: env.APISERVER_HOST || 'localhost',
     port: env.APISERVER_PORT || 5000,
     rendezvous: {

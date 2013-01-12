@@ -26,7 +26,7 @@ describe('releases API', function(){
   beforeEach(common.addUser);
   beforeEach(common.addApp);
 
-  var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+  var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 
   it('should return releases list', function(done){
     request({
