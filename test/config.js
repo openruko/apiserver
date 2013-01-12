@@ -12,7 +12,7 @@ describe('config API', function(){
   beforeEach(common.addUser);
   beforeEach(common.addApp);
 
-  var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+  var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 
   it('should return empty when listing config', function(done){
     request({

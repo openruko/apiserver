@@ -20,7 +20,7 @@ describe('collaborators API', function(){
     }, done);
   });
 
-  var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+  var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 
   it('should only return me when listing collaborators', function(done){
     request({

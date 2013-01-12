@@ -22,7 +22,7 @@ describe('Apps API', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
 
-  var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+  var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 
   describe('without apps', function(){
     it('list apps should return nothing', function(done){
@@ -147,7 +147,7 @@ describe('Apps API', function(){
       });
 
       it('should return one app when listing apps as friendd', function(done){
-        var base = 'http://:' + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + '@localhost:5000';
+        var base = 'https://:' + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + '@localhost:5000';
         request({
           url: base + '/apps'
         }, function(err, res, body){

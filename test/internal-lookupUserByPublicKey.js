@@ -7,7 +7,7 @@ var common = require('./common');
 var gitmouthMock = require('./mock/gitmouth');
 
 before(common.startServer);
-var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 
 describe('internal lookupUserByPublicKey', function(){
   beforeEach(common.cleanDB);

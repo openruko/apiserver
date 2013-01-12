@@ -12,7 +12,7 @@ describe('keys API', function(){
   beforeEach(common.addUser);
   beforeEach(common.addApp);
 
-  var base = 'http://:' + common.defaultUser.apiKey + '@localhost:5000';
+  var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
   var sshKey = common.defaultKey.sshKey;
 
   it('should return empty when listing keys', function(done){
