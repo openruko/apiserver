@@ -1,10 +1,12 @@
 var env = process.env;
 
-['S3_KEY', 'S3_SECRET', 'S3_BUCKET'].forEach(function(envKey) {
-  if(!env[envKey]) {
-    throw new Error('Environment variables ' + envKey + ' must be defined.');
-  }
-});
+if(env['NODE_ENV'] != 'test') {
+  ['S3_KEY', 'S3_SECRET', 'S3_BUCKET'].forEach(function(envKey) {
+    if(!env[envKey]) {
+      throw new Error('Environment variables ' + envKey + ' must be defined.');
+    }
+  });
+}
 
 module.exports = {
   s3: {

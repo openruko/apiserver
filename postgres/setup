@@ -86,8 +86,9 @@ done;
 
 if [ "$1" != "--functions-only" ]; then
 
-  # Check if this is a vagrant instance and set the Slot Box domain accordingly
-  if grep "^vagrant:" /etc/passwd; then
+  # Check if this is a vagrant or travis instance and set the Slot Box domain accordingly
+  # Don't like this, think it would be better to have a ENV var like SLOTBOX_ENV=production
+  if grep "^vagrant\|^travis:" /etc/passwd; then
     base_domain="slotbox.local"
   else
     base_domain="slotbox.es"
