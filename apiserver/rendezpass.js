@@ -54,12 +54,12 @@ var server = tls.createServer(options, function(s) {
         secureClient.write(data);
       });
 
-      // Close connection to Rendevous user when user socket closes
+      // Close connection to Rendevous user when dyno socket closes
       secureClient.on('close', function() {
         s.destroySoon();
       });
 
-      // Close connection to Rendevous user when dyno socket closes
+      // Close connection to dyno socket when Rendevous user socket closes
       s.on('close', function() {
         secureClient.destroySoon();
       });
