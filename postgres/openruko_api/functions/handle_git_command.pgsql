@@ -14,6 +14,7 @@ DECLARE
   v_base_protocol text;
   v_command_args text[];
   v_app app%rowtype;
+  v_release release%rowtype;
 BEGIN
 
   
@@ -47,6 +48,10 @@ BEGIN
 
   v_env_vars = v_env_vars || hstore('push_code_url', v_base_protocol || '://:' ||
     p_api_key || '@' || v_base_host || '/internal/' || p_app_name || '/pushcode');
+
+  v_release = get_current_release(p_app_id);
+
+  v_env_vars = v_env_vars || v_release.env;
 
   INSERT INTO provision_job 
     (template, name, dyno_id, rez_id, env_vars, attached, pty, 
