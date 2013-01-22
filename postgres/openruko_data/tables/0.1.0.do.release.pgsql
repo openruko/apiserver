@@ -1,4 +1,4 @@
-CREATE TABLE release
+CREATE TABLE IF NOT EXISTS release
 (
   id serial NOT NULL,
   descr text,

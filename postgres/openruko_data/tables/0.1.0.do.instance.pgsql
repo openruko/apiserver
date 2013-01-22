@@ -1,4 +1,4 @@
-CREATE TABLE instance
+CREATE TABLE IF NOT EXISTS instance
 (
   id text NOT NULL DEFAULT generate_uuid()::text,
   release_id integer,

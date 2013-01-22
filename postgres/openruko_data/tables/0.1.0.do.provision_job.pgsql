@@ -1,4 +1,4 @@
-CREATE TABLE provision_job
+CREATE TABLE IF NOT EXISTS provision_job
 (
   id serial NOT NULL,
   instance_id text,

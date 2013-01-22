@@ -1,4 +1,4 @@
-CREATE TABLE oruser (
+CREATE TABLE IF NOT EXISTS oruser (
   id serial NOT NULL,
   email text NOT NULL,
   password_encrypted text NOT NULL,
