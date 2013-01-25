@@ -70,6 +70,8 @@ module.exports = function(pgClient, options) {
       },function(cb){
         pgClient.query('SET search_path TO openruko_data, openruko_api, public', cb);
       },function(cb){
+        pgClient.query("add_user('admin@dev.null','superuser', 'nopassword', true, '$1')", conf.apiserver.key, cb);
+      },function(cb){
         self.exec('bootstrap', { schemaName: 'openruko_api'}, function(err,result) {
           if(err) return cb(err);
           result.rows.forEach(function(row) {

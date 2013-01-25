@@ -7,7 +7,7 @@ DECLARE
 BEGIN
   -- username is email
   
-  SELECT * FROM oruser WHERE email = p_username INTO v_matched_user;
+  SELECT * FROM oruser WHERE email = p_username AND is_super_user = false INTO v_matched_user;
 
   IF v_matched_user IS NULL THEN
     RAISE EXCEPTION 'Authentication failed no user';

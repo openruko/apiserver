@@ -56,18 +56,12 @@ Create an ssh key
 ssh-keygen -t rsa
 ```
 
-Create database (apologises for the robustness of the db boostrap script)
+Create database
 ```
 sudo -u postgres createuser -s -P -U postgres
 # enter your login name
 # enter the password, for exemple openruko
-cd postgres
-./setup
-# Database name: openruko
-# Your name: 
-# Your email: 
-# Desired password (will be hashed):
-cd ..
+createdb openruko
 ```
 
 Create certs for the rendezvous endpoint (tls):
@@ -81,6 +75,7 @@ apiserver/bin/apiserver will check for the presence of several environment varia
 these must be configured as part of the process start - e.g. configured in 
 supervisord or as part of boot script see ./apiserver/conf.js
 
+* APISERVER_KEY - special key for other services to authenticate with API server (you can generate one with `uuidgen`)
 * PG_USER - Your login name, unless you set something else.
 * PG_PASSWORD - Your postgresql password, for exemple openruko
 * S3_KEY - You need an Amazon S3 account to store repos and slug archive
@@ -97,31 +92,25 @@ Just add the following environment variable:
 
 ```
 $ cat > .env << EOF
-PG_USER=$YOUR_LOGIN_NAME
-S3_KEY=$YOUR_AMAZON_S3_KEY
-S3_SECRET=$YOUR_AMAZON_S3_SECRET
-S3_BUCKET=$YOUR_AMAZON_S3_BUCKET
+APISERVER_KEY=xxx
+PG_PASSWORD=xxx
+S3_KEY=xxx
+S3_SECRET=xxx
+S3_BUCKET=xxx
 EOF
 
 foreman start
 ```
 
+## Create a user
+
+Once apiserver launched, you will need to create your first user.
+
+```
+./apiserver/bin/adduser
+```
+
 ## Test
-
-To test apiserver, first you need to setup a test database.
-
-```
-cd postgres
-./setup
-# database name: openruko_test
-# your name: test
-# your email: test@test.com
-# password: test
-```
-
-Make sure your have `PG_USER`, `PG_PASSWORD` in your env variables.
-
-Now run the tests
 
 ```
 npm test

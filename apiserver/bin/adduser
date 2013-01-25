@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var Path = require('path');
+var request = require('request');
+var read = require("read");
+var async = require("async");
+var _ = require('underscore');
+
+//first load .env file in cwd
+try{
+  var env = fs.readFileSync('.env').toString();
+  console.log('Found .env file, will load environment varibles.')
+  env.split('\n').forEach(function(line){
+    var arr = line.split('=');
+    var key = arr[0];
+    var value = arr[1];
+    process.env[key] = value;
+  });
+}catch(e){ /* do nothing if not present */ }
+
+// don't need S3 and PG ENV to be defined
+process.env.S3_KEY="nothing";
+process.env.S3_SECRET="nothing";
+process.env.S3_BUCKET="nothing";
+process.env.PG_PASSWORD="nothing";
+var conf = require('../conf');
+
+async.series([
+  function(cb){
+    read({
+      prompt: 'User name:'
+    }, cb);
+  },
+  function(cb){
+    read({
+      prompt: 'User email:'
+    }, cb);
+  },
+  function(cb){
+    read({
+      prompt: 'User password:',
+      silent: true
+    }, cb);
+  }
+], function(err, arr){
+  request.post({
+    url: _({pathname: '/internal/user'}).defaults(conf.apiserver),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + new Buffer(':' + conf.apiserver.key).toString('base64')
+    },
+    body: JSON.stringify({
+      name: arr[0][0],
+      email: arr[1][0],
+      password: arr[2][0]
+    })
+  }, function(err, resp, body){
+    if(err) return console.error(err);
+    console.log(body);
+  });
+});
