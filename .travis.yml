@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - 0.8
+
+services: postgresql
+before_script:
+  - psql -c 'create database openruko_test;' -U postgres
+env:
+  - PG_USER=postgres 
+  - PG_PASSWORD=
