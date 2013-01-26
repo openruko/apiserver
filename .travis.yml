@@ -4,6 +4,6 @@ node_js:
 
 services: postgresql
 before_script:
-  - make certs
+  - echo -e '\n\n\n\n\n\n\n\n' | make certs
   - psql -c 'create database openruko_test;' -U postgres
 env: PG_USER=postgres PG_PASSWORD=
