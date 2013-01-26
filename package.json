@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "./apiserver/bin/apiserver",
-    "test": "PG_DATABASE=openruko_test S3_KEY=test S3_SECRET=test S3_BUCKET=test ./node_modules/.bin/mocha -R spec --grep \"$GREP\""
+    "test": "PG_DATABASE=openruko_test APISERVER_KEY=test S3_KEY=test S3_SECRET=test S3_BUCKET=test ./node_modules/.bin/mocha -R spec --grep \"$GREP\""
   },
   "license": "MIT",
   "devDependencies": {

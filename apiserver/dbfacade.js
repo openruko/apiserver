@@ -6,6 +6,7 @@ var dibigrator = require('dibigrator');
 var async = require('async');
 var fmtutils = require('./fmtutils');
 var version = require('../package.json').version;
+var conf = require('./conf');
 var layouts = { 'bootstrap': ['schemaName'] };
 
 module.exports = function(pgClient, options) {
@@ -62,6 +63,7 @@ module.exports = function(pgClient, options) {
             async.forEach(files, function(file, cb){
               fs.readFile(Path.join(path, file), function(err, data){
                 if(err) return cb(err);
+                console.log(file);
                 pgClient.query(data.toString(), cb);
               });
             }, cb);
@@ -70,7 +72,10 @@ module.exports = function(pgClient, options) {
       },function(cb){
         pgClient.query('SET search_path TO openruko_data, openruko_api, public', cb);
       },function(cb){
-        pgClient.query("add_user('admin@dev.null','superuser', 'nopassword', true, '$1')", conf.apiserver.key, cb);
+        pgClient.query("SELECT * FROM add_user('admin@dev.null','superuser', 'nopassword', true, $1)", [conf.apiserver.key], function(err){
+          if(/already exists/.test(err)) return cb();
+          cb(err);
+        });
       },function(cb){
         self.exec('bootstrap', { schemaName: 'openruko_api'}, function(err,result) {
           if(err) return cb(err);

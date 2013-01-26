@@ -18,7 +18,10 @@ WITH (
   OIDS=FALSE
 );
 
+DROP INDEX IF EXISTS name_idx;
 CREATE INDEX name_idx ON instance (name);
+
+DROP INDEX IF EXISTS retired_idx;
 CREATE INDEX retired_idx ON instance (retired);
 
 -- vim: set filetype=pgsql :

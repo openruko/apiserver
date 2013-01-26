@@ -113,7 +113,8 @@ Once apiserver launched, you will need to create your first user.
 ## Test
 
 ```
-npm test
+createdb openruko_test
+PG_PASSWORD=xxx npm test
 ```
 
 ## Help and Todo
