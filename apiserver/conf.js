@@ -1,6 +1,6 @@
 var env = process.env;
 
-['S3_KEY', 'S3_SECRET', 'S3_BUCKET', 'APISERVER_KEY', 'PG_PASSWORD'].forEach(function(envKey) {
+['S3_KEY', 'S3_SECRET', 'S3_BUCKET', 'APISERVER_KEY'].forEach(function(envKey) {
   if(!env[envKey]) {
     throw new Error('Environment variables ' + envKey + ' must be defined.');
   }
