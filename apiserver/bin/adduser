@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var Path = require('path');
+var Url = require('url');
 var request = require('request');
 var read = require("read");
 var async = require("async");
@@ -45,7 +46,7 @@ async.series([
   }
 ], function(err, arr){
   request.post({
-    url: _({pathname: '/internal/user'}).defaults(conf.apiserver),
+    url: Url.format(_({pathname: '/internal/user'}).defaults(conf.apiserver)),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Basic ' + new Buffer(':' + conf.apiserver.key).toString('base64')
