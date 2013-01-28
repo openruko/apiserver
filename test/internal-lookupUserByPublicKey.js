@@ -12,6 +12,7 @@ var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 describe('internal lookupUserByPublicKey', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
+  beforeEach(common.addSuperUser);
 
   it('should reject the request without key', function(done){
     gitmouthMock.lookupUserByPublicKey(common.defaultKey.fingerprint, function(err, res, body){

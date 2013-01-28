@@ -109,9 +109,9 @@ authorizeRequest = function(cb) {
 
   var self = this;
 
-  if(self.routeInfo.superUserOnly && !self.requestPayload.isSuperUser) {
+  if((self.routeInfo.superUserOnly || self.routeInfo.routePath.indexOf('/internal/') !== -1) && !self.requestPayload.isSuperUser) {
     return cb({ error: 'Access denied', code: 401 });
-  } 
+  }
 
   if(self.routeInfo.routePath.indexOf(':appName') !== -1) {
     var pgArgs = { userId: self.requestPayload.userId,

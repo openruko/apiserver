@@ -19,7 +19,7 @@ BEGIN
 
   IF v_user.is_super_user THEN
     RETURN QUERY SELECT v_matched_app_id AS app_id, 
-      false AS is_app_owner, 'edit' AS access;
+      false AS is_app_owner, 'edit'::text AS access;
   ELSE 
     SELECT * FROM collaborator WHERE collaborator.user_id = p_user_id AND  
       collaborator.app_id = v_matched_app_id INTO v_matched_collaborator;
