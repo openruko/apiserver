@@ -33,6 +33,17 @@ describe('internal lookupUserByPublicKey', function(){
       }, done);
     });
 
+    it('should reject the request with a normal user', function(done){
+      request({
+        url: base + '/internal/lookupUserByPublicKey?fingerprint=' + common.defaultKey.fingerprint,
+        json: true
+      }, function(err, res, body){
+        expect(res).to.have.status(401);
+        expect(body.error).to.equal('Access denied');
+        done();
+      });
+    });
+
     it('should accept the request when giving a valid fingerprint', function(done){
       gitmouthMock.lookupUserByPublicKey(common.defaultKey.fingerprint, function(err, res, body){
         if(err) return done(err);
