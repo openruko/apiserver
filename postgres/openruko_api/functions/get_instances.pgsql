@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION get_instances
-  (p_app_id integer, p_type text)
+  (p_app_id integer, p_type text DEFAULT NULL)
 RETURNS 
 TABLE(
 id text,

@@ -1,5 +1,5 @@
-CREATE TABLE app (
-  id serial NOT NULL, 
+CREATE TABLE IF NOT EXISTS app (
+  id serial NOT NULL,
   name text NOT NULL,
   user_id integer,
   stack text NOT NULL DEFAULT 'cedar'::text,

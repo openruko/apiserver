@@ -1,4 +1,4 @@
-CREATE TABLE instance_state
+CREATE TABLE IF NOT EXISTS instance_state
 (
   id serial NOT NULL,
   state text,

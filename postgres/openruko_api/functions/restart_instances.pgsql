@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION restart_instances
-(p_app_id integer, p_instance_type_or_name text)
+(p_app_id integer, p_instance_type_or_name text DEFAULT NULL)
 RETURNS integer AS
 $BODY$
 DECLARE
