@@ -132,6 +132,8 @@ authorizeRequest = function(cb) {
         cb();
       }
     });
+  }else{
+    cb();
   }
 };
 
