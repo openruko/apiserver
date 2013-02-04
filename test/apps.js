@@ -124,7 +124,7 @@ describe('Apps API', function(){
       });
     });
 
-    describe('with one app shared by a friend', function(){
+    describe('with an other user', function(){
       beforeEach(function(done){
         common.addUser({
           email: 'friend@friend.com',
@@ -133,30 +133,45 @@ describe('Apps API', function(){
           apiKey: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
         }, done);
       });
-      beforeEach(function(done){
-        request.post({
-          url: base + '/apps/myApp/collaborators',
-          qs: {
-            'collaborator[email]': 'friend@friend.com'
-          }
-        }, function(err, res, body){
-          if(err) return done(err);
-          expect(res).to.have.status(200);
-          done();
-        });
-      });
 
-      it('should return one app when listing apps as friendd', function(done){
+      it('should return 0 apps', function(done){
         var base = 'https://:' + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + '@localhost:5000';
         request({
           url: base + '/apps'
         }, function(err, res, body){
           if(err) return done(err);
           expect(res).to.have.status(200);
-          expect(body).to.have.length(1);
-          expect(body[0].name).to.be.equal('myApp');
-          expect(body[0].owner_email).to.be.equal('test@test.com');
+          expect(body).to.have.length(0);
           done();
+        });
+      });
+
+      describe('when sharing an app to an other user', function(){
+        beforeEach(function(done){
+          request.post({
+            url: base + '/apps/myApp/collaborators',
+            qs: {
+              'collaborator[email]': 'friend@friend.com'
+            }
+          }, function(err, res, body){
+            if(err) return done(err);
+            expect(res).to.have.status(200);
+            done();
+          });
+        });
+
+        it('should return one app when listing apps as friendd', function(done){
+          var base = 'https://:' + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + '@localhost:5000';
+          request({
+            url: base + '/apps'
+          }, function(err, res, body){
+            if(err) return done(err);
+            expect(res).to.have.status(200);
+            expect(body).to.have.length(1);
+            expect(body[0].name).to.be.equal('myApp');
+            expect(body[0].owner_email).to.be.equal('test@test.com');
+            done();
+          });
         });
       });
     });

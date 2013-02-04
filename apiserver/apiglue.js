@@ -9,7 +9,11 @@ module.exports.buildHandler = function(app, routeInfo, key) {
     chain.push(authenticateRequest);
   }
 
-  if(routeInfo.routePath.indexOf(':appName') !== -1) {
+  if(/internal/.test(routeInfo.routePath)) {
+    chain.push(authorizeRequest);
+  }
+
+  if(/:appName/.test(routeInfo.routePath)) {
     chain.push(authorizeRequest);
   }
 
@@ -84,7 +88,7 @@ authenticateRequest = function(cb) {
   var auth = self.raw.req.headers.authorization;
 
   if(!auth || auth.length < 10) {
-    return cb({ error: 'Access denied', code: 401 });
+    return cb({ error: 'Access denied', code: 401, friendly: true });
   }
 
   var decoded = new Buffer(auth.substring(5),'base64').toString();
@@ -109,11 +113,11 @@ authorizeRequest = function(cb) {
 
   var self = this;
 
-  if(self.routeInfo.superUserOnly && !self.requestPayload.isSuperUser) {
-    return cb({ error: 'Access denied', code: 401 });
-  } 
+  if((self.routeInfo.superUserOnly || /internal/.test(self.routeInfo.routePath)) && !self.requestPayload.isSuperUser) {
+    return cb({ error: 'Access denied', code: 401, friendly: true });
+  }
 
-  if(self.routeInfo.routePath.indexOf(':appName') !== -1) {
+  if(/:appName/.test(self.routeInfo.routePath)) {
     var pgArgs = { userId: self.requestPayload.userId,
       appName: self.raw.req.params.appName.toString() };
 
@@ -123,7 +127,7 @@ authorizeRequest = function(cb) {
       self.requestPayload.appName = pgArgs.appName;
       self.requestPayload.isAppOwner = result.rows[0].is_app_owner; 
       if(self.routeInfo.appOwnerOnly && !self.requestPayload.isAppOwner) {
-        return cb({ error: 'Access denied', code: 401 });
+        return cb({ error: 'Access denied', code: 401, friendly: true });
       } else {
         cb();
       }

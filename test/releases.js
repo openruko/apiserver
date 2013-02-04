@@ -24,6 +24,7 @@ before(common.startServer);
 describe('releases API', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
+  beforeEach(common.addSuperUser);
   beforeEach(common.addApp);
 
   var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';

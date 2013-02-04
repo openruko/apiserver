@@ -1,7 +1,7 @@
 var request = require('request');
 var common = require('../common');
 
-var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
+var base = 'https://:' + common.superUser.apiKey + '@localhost:5000';
 
 exports.updateState = function(appId, dynoId, instanceId, state, cb){
   request.post({
