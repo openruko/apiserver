@@ -102,6 +102,8 @@ module.exports = function(pgClient, options) {
     var sql = "SELECT * FROM openruko_api." + 
       fmtutils.toPostgres(pgFunctionName) + " ";
 
+    layout=layout.filter(function(column){return payload[column] !== undefined })
+
     sql += '(' + layout.map(function(item, index)  {
       return "$" + (index + 1);
     }).join(',') + ')';
@@ -113,7 +115,9 @@ module.exports = function(pgClient, options) {
       if(payloadValue && typeof payloadValue === 'object') {
         payloadValue = hstore.stringify(payloadValue);
       }
-      values.push(payloadValue);
+      if(payloadValue !== undefined){
+        values.push(payloadValue);
+      }
     });
 
     pgClient.query(sql, values, function(err, result) {
