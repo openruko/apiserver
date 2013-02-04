@@ -1,4 +1,4 @@
-CREATE TABLE collaborator
+CREATE TABLE IF NOT EXISTS collaborator
 (
   user_id integer NOT NULL,
   app_id integer NOT NULL,

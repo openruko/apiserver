@@ -1,4 +1,4 @@
-CREATE TABLE domain
+CREATE TABLE IF NOT EXISTS domain
 (
   id serial NOT NULL,
   domain text,

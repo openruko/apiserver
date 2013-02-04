@@ -101,6 +101,10 @@ module.exports = {
     method: 'POST',
     okayCode: 200,
     errorCode: 422,
+    before: function(cb){
+      this.requestPayload = this.raw.req.body;
+      cb();
+    },
     after: function(cb){
       var dbResponse = this.responsePayload.rows[0];
       this.responsePayload = "Congrat " + dbResponse.name + ". Welcome on Openruko ;)"
