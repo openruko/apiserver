@@ -39,9 +39,14 @@ exports.addUser = function(user, cb){
     cb = user;
     user = {};
   }
-  app.db.exec('addUser', _(user).defaults(exports.defaultUser), function(err, results){
+  exports.addSuperUser(exports.superUser, function(err){
     if(err) return cb(err);
-    cb(null, results.rows[0]);
+    var base = 'https://:' + exports.superUser.apiKey + '@localhost:5000';
+    user = _(user).defaults(exports.defaultUser);
+    request.post({
+      url: base + '/internal/user',
+      json: user
+    }, cb);
   });
 };
 
@@ -51,6 +56,7 @@ exports.addSuperUser = function(user, cb){
     user = {};
   }
   app.db.exec('addUser', _(user).defaults(exports.superUser), function(err, results){
+    if(err && /Sorry, a user with that email address already exists/.test(err.error)) return cb();
     if(err) return cb(err);
     cb(null, results.rows[0]);
   });
