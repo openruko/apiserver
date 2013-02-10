@@ -91,6 +91,16 @@ module.exports = {
 
 
       cb();
-    } 
+    }
+
+  },
+
+  // Increment an app's heartbeat by 1
+  incrementHeartbeat: {
+    routePath : '/internal/incrementHeartbeat',
+    payloadSource: 'body',
+    method: 'POST',
+    okayCode: 200,
+    errorCode: 404
   }
 };

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS app (
   dynos integer DEFAULT 0,
   workers integer DEFAULT 0,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
+  heartbeats integer,
   slugsize integer,
   reposize integer,
   buildpack_provided_description text,
