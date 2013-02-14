@@ -1,6 +1,6 @@
-CREATE TABLE key
+CREATE TABLE IF NOT EXISTS key
 (
-  id serial NOT NULL, 
+  id serial NOT NULL,
   user_id integer,
   key_type text NOT NULL,
   key_key text NOT NULL,

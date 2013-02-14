@@ -57,6 +57,7 @@ Assertion.addProperty('killJob', function () {
 describe('internal provisionJob', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
+  beforeEach(common.addSuperUser);
   beforeEach(common.addApp);
 
   var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';

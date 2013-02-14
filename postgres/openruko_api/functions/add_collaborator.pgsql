@@ -1,6 +1,5 @@
 CREATE OR REPLACE FUNCTION add_collaborator
-(p_app_id integer, p_inviter_user_id integer, p_email text)
--- TODP p_inviter_user_id is not used
+(p_app_id integer, p_email text)
 RETURNS TABLE(name text, email text, access text) AS
 $BODY$
 DECLARE

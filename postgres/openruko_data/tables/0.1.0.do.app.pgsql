@@ -1,5 +1,5 @@
-CREATE TABLE app (
-  id serial NOT NULL, 
+CREATE TABLE IF NOT EXISTS app (
+  id serial NOT NULL,
   name text NOT NULL,
   user_id integer,
   stack text NOT NULL DEFAULT 'cedar'::text,
@@ -9,6 +9,7 @@ CREATE TABLE app (
   dynos integer DEFAULT 0,
   workers integer DEFAULT 0,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
+  heartbeats integer,
   slugsize integer,
   reposize integer,
   buildpack_provided_description text,

@@ -12,6 +12,7 @@ var base = 'https://:' + common.defaultUser.apiKey + '@localhost:5000';
 describe('internal lookupUserByPublicKey', function(){
   beforeEach(common.cleanDB);
   beforeEach(common.addUser);
+  beforeEach(common.addSuperUser);
 
   it('should reject the request without key', function(done){
     gitmouthMock.lookupUserByPublicKey(common.defaultKey.fingerprint, function(err, res, body){
@@ -30,6 +31,17 @@ describe('internal lookupUserByPublicKey', function(){
         body: common.defaultKey.sshKey,
         json: false
       }, done);
+    });
+
+    it('should reject the request with a normal user', function(done){
+      request({
+        url: base + '/internal/lookupUserByPublicKey?fingerprint=' + common.defaultKey.fingerprint,
+        json: true
+      }, function(err, res, body){
+        expect(res).to.have.status(401);
+        expect(body.error).to.equal('Access denied');
+        done();
+      });
     });
 
     it('should accept the request when giving a valid fingerprint', function(done){

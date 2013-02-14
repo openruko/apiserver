@@ -1,4 +1,4 @@
-CREATE TABLE settings
+CREATE TABLE IF NOT EXISTS settings
 (
   key text NOT NULL,
   value text,

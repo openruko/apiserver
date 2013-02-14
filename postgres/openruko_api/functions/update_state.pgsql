@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION update_state
-(p_instance_id text, p_dyno_id text, p_state text, p_port integer)
+(p_instance_id text, p_dyno_id text, p_state text, p_port integer DEFAULT NULL)
 RETURNS integer AS
 $BODY$
 DECLARE
