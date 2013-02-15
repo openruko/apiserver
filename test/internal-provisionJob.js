@@ -7,7 +7,7 @@ var request = require('request').defaults({json: true});
 var common = require('./common');
 var preReceiveMock = require('./mock/codonhooks').preReceive;
 var dynohostMock = require('./mock/dynohost');
-var gitmouthMock = require('./mock/gitmouth');
+var deployerMock = require('./mock/deployer');
 
 before(common.startServer);
 
@@ -149,9 +149,9 @@ describe('internal provisionJob', function(){
     });
   });
 
-  describe('When executing a git action', function(){
+  describe('When deploying', function(){
     beforeEach(function(done){
-      gitmouthMock.handleGitCommand('myApp');
+      deployerMock.handleGitCommand('myApp');
       setTimeout(done, 100);
     });
 
@@ -170,8 +170,8 @@ describe('internal provisionJob', function(){
         expect(data[0].env_vars.push_code_url).to.exist;
         expect(data[0].attached).to.be.true;
         expect(data[0].pty).to.be.false;
-        expect(data[0].command).to.be.equal('/usr/bin/git-receive-pack');
-        expect(data[0].command_args).to.be.deep.equal(['/app']);
+        expect(data[0].command).to.be.equal('/app/hooks/fetch-repo git@github.com:slotbox/nodejs-hello-world.git');
+        expect(data[0].command_args).to.be.deep.equal(null);
         expect(data[0].logplex_id).to.be.null;
         expect(data[0].mounts['/app']).to.exist;
         expect(data[0].mounts['/tmp/buildpacks']).to.exist;

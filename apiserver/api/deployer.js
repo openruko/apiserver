@@ -19,6 +19,7 @@ module.exports = {
       // actually deal with post-fetching. Well there's post-merge, but that has to be run manually
       // after a git fetch anyway.
       this.requestPayload.command = '/app/hooks/fetch-repo ' + this.requestPayload.app.github_url;
+      this.requestPayload.commandArgs = null;
 
       // Get a job to build the new slug
       dbfacade.exec('handleGitCommand', this.requestPayload, function(dbError, dbResult) {
