@@ -1,5 +1,5 @@
 # Api Server - The oracle of the dyno world
-[![Build Status](https://travis-ci.org/openruko/apiserver.png)](https://travis-ci.org/openruko/apiserver)
+[![Build Status](https://travis-ci.org/slotbox/apiserver.png)](https://travis-ci.org/slotbox/apiserver)
 
 ## Introduction
 
