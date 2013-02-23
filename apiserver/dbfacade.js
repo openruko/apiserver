@@ -88,21 +88,22 @@ module.exports = function(pgClient, options) {
       },function(cb){
         // Settings
         // Add openruko settings values from conf.js object
-        for(key in conf.openruko){
+        var key_name;
+        for(key_name in conf.openruko){
           // Running UPDATE and then INSERT like this acts as an UPSERT
           async.series([
             function(cb){
-              pgClient.query("UPDATE openruko_data.settings SET key=$1, value=$2 WHERE key=$1;",
-                [key, conf.openruko[key]],
+              pgClient.query("UPDATE openruko_data.settings SET key_name=$1, value=$2 WHERE key_name=$1;",
+                [key_name, conf.openruko[key_name]],
                 cb
               );
             },
             function(cb){
               pgClient.query(
-                "INSERT INTO openruko_data.settings (key, value) \
+                "INSERT INTO openruko_data.settings (key_name, value) \
                   SELECT $1, $2 \
-                  WHERE NOT EXISTS (SELECT 1 FROM openruko_data.settings WHERE key=$1);",
-                [key, conf.openruko[key]],
+                  WHERE NOT EXISTS (SELECT 1 FROM openruko_data.settings WHERE key_name=$1);",
+                [key_name, conf.openruko[key_name]],
                 cb
               );
             }
