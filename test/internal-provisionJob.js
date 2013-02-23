@@ -226,6 +226,20 @@ describe('internal provisionJob', function(){
       }, 30);
     });
 
+    it('it should handle heartbeats and increment an app\'s total heartbeats', function(done){
+      var instance_id;
+      preReceiveMock('myApp', function(){
+        dynohostMock.getJobs(function(err, data){
+          if(err) return done(err);
+          instance_id = data[0].instance_id;
+          dynohostMock.incrementHeartbeat(instance_id, function(err, body){
+            expect(body.rows[0].increment_heartbeat).to.be.greaterThan(0);
+            done();
+          });
+        });
+      });
+    })
+
     describe('when updating the repo', function(){
       beforeEach(function(done){
         preReceiveMock('myApp', done);

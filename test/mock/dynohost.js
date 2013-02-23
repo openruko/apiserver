@@ -15,6 +15,17 @@ exports.updateState = function(appId, dynoId, instanceId, state, cb){
   }, cb);
 };
 
+exports.incrementHeartbeat = function(instanceId, cb){
+  request.post({
+    url: base + '/internal/incrementHeartbeat',
+    json: {
+      instanceId: instanceId
+    }
+  }, function(err, resp, body){
+    cb(err, body);
+  });
+};
+
 exports.getJobs = function(cb){
   request({
     url: base + '/internal/getjobs',
