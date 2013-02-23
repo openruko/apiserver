@@ -1,6 +1,7 @@
 var db = require('../apidb');
 var dbfacade= require('../dbfacade')(db);
 var async = require('async');
+var conf = require('../conf');
 
 module.exports = {
 
@@ -20,6 +21,10 @@ module.exports = {
       // after a git fetch anyway.
       this.requestPayload.command = '/app/hooks/fetch-repo ' + this.requestPayload.app.github_url;
       this.requestPayload.commandArgs = null;
+
+      // Change the API key from the deployer's to that of Super User as the job needs to make
+      // internal API requests with it.
+      this.requestPayload.apiKey = conf.apiserver.key;
 
       // Get a job to build the new slug
       dbfacade.exec('handleGitCommand', this.requestPayload, function(dbError, dbResult) {

@@ -2,9 +2,11 @@ var async = require('async');
 var _ = require('underscore');
 
 module.exports.buildHandler = function(app, routeInfo, key) {
-  
+
   var chain = [];
 
+  // Unless routeInfo is _explicitly_ set to boolean false, the
+  // method must authenticate.
   if(routeInfo.authenticate !== false) {
     chain.push(authenticateRequest);
   }
@@ -21,7 +23,7 @@ module.exports.buildHandler = function(app, routeInfo, key) {
 
   if(typeof routeInfo.before === 'function') {
     chain.push(routeInfo.before);
-  } 
+  }
 
   if(typeof routeInfo.before === 'string') {
     var modulePath ='./utils/before/' + routeInfo.before.toLowerCase();
@@ -36,7 +38,7 @@ module.exports.buildHandler = function(app, routeInfo, key) {
 
   if(typeof routeInfo.after === 'function') {
     chain.push(routeInfo.after);
-  } 
+  }
 
   if(typeof routeInfo.after === 'string') {
     chain.push(require('./utils/after/' + routeInfo.after.toLowerCase()));
@@ -96,8 +98,8 @@ authenticateRequest = function(cb) {
   var apikey = decodedParts[decodedParts.length - 1];
 
   self.requestPayload.apiKey = apikey;
-  
-  self.db.exec('authenticateUserByApiKey', { apiKey: apikey }, 
+
+  self.db.exec('authenticateUserByApiKey', { apiKey: apikey },
   function(err, result) {
     if(err) return cb(_.extend(err, {code: 401}));
 
@@ -123,9 +125,9 @@ authorizeRequest = function(cb) {
 
     self.db.exec('authorizeUserByAppName', pgArgs, function(err, result) {
       if(err) return cb(err);
-      self.requestPayload.appId = result.rows[0].app_id; 
+      self.requestPayload.appId = result.rows[0].app_id;
       self.requestPayload.appName = pgArgs.appName;
-      self.requestPayload.isAppOwner = result.rows[0].is_app_owner; 
+      self.requestPayload.isAppOwner = result.rows[0].is_app_owner;
       if(self.routeInfo.appOwnerOnly && !self.requestPayload.isAppOwner) {
         return cb({ error: 'Access denied', code: 401, friendly: true });
       } else {
@@ -138,10 +140,10 @@ authorizeRequest = function(cb) {
 };
 
 buildRequestPayload = function(cb) {
-  
+
   var nonOverrideable = ['userId','appId','apiKey',
     'userEmail','isAppOwner','isSuperUser','appName'];
-  
+
   var self = this;
 
   var req = self.raw.req;

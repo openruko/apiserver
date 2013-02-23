@@ -7,6 +7,9 @@ var env = process.env;
 });
 
 module.exports = {
+  openruko: {
+    base_domain: env.OPENRUKO_HOST
+  },
   s3: {
     key: env.S3_KEY,
     secret: env.S3_SECRET,

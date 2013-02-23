@@ -37,7 +37,8 @@ module.exports.createServer = function(opts) {
   app.start = function(cb) {
     app.db.init(function(err) {
       if(err) {
-        throw err;
+        console.log(new Error().stack);
+        // throw err;
       } else {
         require('./jobgiver')(app);
         app.listen(opts.port, cb);

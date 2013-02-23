@@ -7,7 +7,8 @@ module.exports = {
     before: function(cb) {
       var payload = this.requestPayload;
       payload.name = payload.app.name;
-      payload.stack = payload.app.stack;
+      payload.stack = 'cedar';//payload.app.stack;
+      console.log(payload);
       cb();
     },
     after: 'singleRow',
