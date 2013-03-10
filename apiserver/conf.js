@@ -7,6 +7,10 @@ var env = process.env;
 });
 
 module.exports = {
+  openruko: {
+    // All key/values here are placed into the settings table of the DB
+    //base_domain: "openruko.com"
+  },
   s3: {
     key: env.S3_KEY,
     secret: env.S3_SECRET,
