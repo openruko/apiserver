@@ -1,3 +1,12 @@
+/*
+ * The basic idea of how jobs work in Openruko is that jobs are first created by adding a job
+ * to the provision_job table. Take for example the very simple `openruko run ls'; this triggers
+ * the run_command.pgsql function, which in turns creates a job that waits to be picked up by a dyno.
+ * The dyno hostserver (only one runs inside each dyno server; NB. many dynos can run inside a 
+ * dyno server) polls for jobs via the /internal/getjobs route below. If a dyno succesfully picks up
+ * a job then it is marked as 'distributed' via the distributed_to field in the provision_job table.
+ */
+
 var db = require('./apidb');
 var dbfacade= require('./dbfacade')(db);
 var _ = require('underscore');
@@ -139,7 +148,18 @@ tasks.distributeTasksOutstanding = function(cb) {
     var leastBurdenedHost = _.min(self.awaitingAssignment,function(host) {
       return host.runningDynos;
     });
+
+
     if(leastBurdenedHost) {
+
+      // Although markJobsDistributed adds the same hostname value to the distributed_to field (which
+      // then gets persisted), it doesn't do so until after the job object is returned to the API client.
+      // Returning the requesting dyno's hostname to itself (a little tautological I know, but saves the dyno
+      // doing awkward system lookups of its external interfaces) allows it to update its record in the
+      // instance table with its hostname, which is then used by the HTTP router to forward external web
+      // requests.
+      task.dyno_hostname = leastBurdenedHost.host;
+
       leastBurdenedHost.tasks.push(task);
       leastBurdenedHost.runningDynos++;
       self.jobsOutstanding.provision.splice(self.jobsOutstanding.provision.indexOf(task), 1);
