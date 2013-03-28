@@ -17,7 +17,7 @@ module.exports = {
       var result;
       var self = this;
 
-      // Query the Job Giver 15 times with the job ID created via the run_command PGSQL function.
+      // Query the Job Giver every 200ms but no more than 15 times with the job ID created via the run_command PGSQL function.
       async.whilst(function() {
         return !(result || timesQueried > 15);
       }, function(callback) {
