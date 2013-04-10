@@ -40,14 +40,6 @@ module.exports = {
     after: 'singleRow',
     errorCode: 404
   },
-  getAddons: {
-    routePath: '/apps/:appName/addons',
-    payloadSource: 'params',
-    method: 'GET',
-    after: 'onlyRows',
-    okayCode: 200,
-    errorCode: 404
-  },
   // FIXME why this here, and in domains.js
   getDomains: {
     routePath: '/apps/:appName/domains',

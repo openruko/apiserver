@@ -27,16 +27,16 @@ module.exports = {
 
       var yamlBody = this.requestPayload.body;
       var payload = yaml.load(yamlBody);
-      
+
 
       this.requestPayload.addons = payload.addons;
       this.requestPayload.envVars = payload.config_vars;
       this.requestPayload.pstable = payload.pstable;
       this.requestPayload.commit = payload.commit;
       this.requestPayload.slugId = payload.slug_id.toString();
-      
+
       cb();
-    }, 
+    },
     after: function(cb) {
       this.responsePayload = (this.responsePayload.rows[0].seq_count).toString();
       cb();
@@ -66,8 +66,8 @@ module.exports = {
 
           var job = dbResult.rows[0];
           if(job.distributed_to) {
-            result = { 
-              host: job.distributed_to, 
+            result = {
+              host: job.distributed_to,
               dyno_id: job.dyno_id,
               rez_id: job.rez_id
             };
@@ -138,7 +138,7 @@ module.exports = {
 
 
       cb();
-    } 
+    }
   },
 
   // Increment an app's heartbeat by 1
@@ -148,5 +148,23 @@ module.exports = {
     method: 'POST',
     okayCode: 200,
     errorCode: 404
+  },
+
+  addAddon: {
+    routePath: '/internal/addon',
+    payloadSource: 'body',
+    method: 'POST',
+    okayCode: 200,
+    errorCode: 422,
+    before: function(cb){
+      this.requestPayload = this.raw.req.body;
+      cb();
+    },
+    after: function(cb){
+      var dbResponse = this.responsePayload.rows[0];
+      this.responsePayload = "Addon " + dbResponse.name + ", registered with success. ;)"
+      cb();
+    }
   }
+
 };
