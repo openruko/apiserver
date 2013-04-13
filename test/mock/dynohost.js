@@ -3,12 +3,13 @@ var common = require('../common');
 
 var base = 'https://:' + common.superUser.apiKey + '@localhost:5000';
 
-exports.updateState = function(appId, dynoId, instanceId, state, cb){
+exports.updateState = function(appId, dynoId, dynoHostname, instanceId, state, cb){
   request.post({
     url: base + '/internal/updatestate',
     json: {
       appId: appId,
       dynoId: dynoId,
+      dynoHostname: dynoHostname,
       instanceId: instanceId,
       state: state
     }

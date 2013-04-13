@@ -39,8 +39,11 @@ var server = tls.createServer(options, function(s) {
 
     s.write('\n');
 
-    // TODO localhost should be replaced by the right hostname
-    var secureClient = tls.connect({ host: 'localhost', port: conf.dynohost.rendezvous.port }, function() {
+    var secureClient = tls.connect({
+        host: payload.hostname,
+        port: conf.dynohost.rendezvous.port,
+        rejectUnauthorized: false
+    }, function() {
       secureClient.write('xyz\n' + payload.dyno_id + '\n');
 
       // Pass on data from dyno to Rendevous user
