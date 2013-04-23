@@ -1,4 +1,3 @@
-var util = require('util');  // useful for DEBUG
 var request = require('request');
 var db = require('../apidb');
 var dbfacade= require('../dbfacade')(db);
@@ -30,27 +29,31 @@ module.exports = {
     okayCode: 200
   },
   installAddon: {
-    alternativePgFunction: 'installAddonValidation',
+    alternativePgFunction: 'getAppAddon',
     routePath: '/apps/:appName/addons/:addonName',
     payloadSource: 'params',
     method: 'POST',
     after: function(cb) {
       var self = this;
-      var addonRow = this.responsePayload.rows[0];
-      var configVars = addonRow.config_vars;
-      console.log("DEBUG " + util.inspect(addonRow));
+      var addonInfo = this.responsePayload.rows[0];
 
-      var providerUrl = addonRow.provider_url;
-      // TODO: see how to make HTTPS works. This problem is on provider app side.
-      providerUrl = providerUrl.replace(/https/, "http");
+      if (addonInfo.contain_addon) {
+        var msg = 'app already contain ' + addonInfo.addon_id + ' addon.';
+        return cb({ error: msg, code: 422, friendly: true });
+      }
+
+      var providerAuth = "Basic " + new Buffer(addonInfo.addon_id + ':' + addonInfo.password).toString("base64");
+      var providerUrl = addonInfo.provider_url;
       console.log("Requesting resource from " + providerUrl);
 
-      // TODO: see how to set timeout "in seconds"
+      // TODO: see how to set timeout, default value is too long.
       request({
         method: 'POST',
         json: true,
         url: providerUrl,
-        auth: addonRow.addon_id + ":" + addonRow.password
+        headers : {
+          "Authorization" : providerAuth
+        }
       }, function(err, result) {
         if(err) {
           cb({ error: 'unable to request resource from provider server', friendly: true})
@@ -59,17 +62,16 @@ module.exports = {
 
         // Example of expected response body (from successful request):
         // {id: resource.id, config: {"MYSQL_ADDON_DATABASE_URL": resource.url}}
-        var resourceUrl = result.body.config[addonRow.config_vars];
+        var resourceUrl = result.body.config[addonInfo.config_vars];
 
-        // TODO: check if result config has keys from addon "manifest"
-        //if (typeof(resourceUrl) == "undefined" || resourceUrl == null)
-        //  // raise error here!?!
-        //}
+        if (typeof(resourceUrl) == "undefined" || resourceUrl == null){
+          cb({ error: 'invalid resource from provider server', code: 422, friendly: true});
+          return;
+        }
 
-        installParams = self.requestPayload;
+        var installParams = self.requestPayload;
         installParams.envVars = {};
-        installParams.envVars[addonRow.config_vars] = resourceUrl;
-        console.log("DEBUG " + util.inspect(installParams));
+        installParams.envVars[addonInfo.config_vars] = resourceUrl;
 
         self.db.exec('installAddon', installParams, function(dbError, dbResult) {
           if(dbError) return cb(dbError);
@@ -77,7 +79,7 @@ module.exports = {
 
         self.responsePayload = {
           "status": "Installed",
-          "message": "Welcome! Thanks for using " + addonRow.addon_id,
+          "message": "Welcome! Thanks for using " + addonInfo.addon_id,
           "price": "free"
         }
         cb();

@@ -1,5 +1,5 @@
-CREATE OR REPLACE FUNCTION install_addon_validation
-(p_user_id integer, p_app_id integer, p_addon_name text)
+CREATE OR REPLACE FUNCTION get_app_addon
+(p_app_id integer, p_addon_name text)
 RETURNS TABLE(addon_id text, config_vars text, password text,
               provider_url text, plan_price integer, contain_addon boolean) AS
 $BODY$
@@ -35,14 +35,12 @@ BEGIN
     RAISE EXCEPTION 'Addon plan not found.';
   END IF;
 
-  -- check if addon is already on last release
-  SELECT EXISTS(
-    SELECT id FROM release
-      WHERE release.app_id = p_app_id
-        AND release.addons @> ARRAY[v_addon_name]
-      ORDER BY id DESC LIMIT 1;
-      var addonId = addonRow.addon_id;
-  ) INTO v_last_release_contain_addon;
+  -- check if last release already have addon installed
+  SELECT release.addons @> ARRAY[v_addon_name] AS contain_addon
+    FROM release
+   WHERE release.app_id = p_app_id
+  ORDER BY id DESC LIMIT 1
+    INTO v_last_release_contain_addon;
 
   RETURN QUERY SELECT v_row_addon.addon_id AS addon_id,
                       v_row_addon.config_vars AS config_vars,

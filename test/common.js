@@ -28,7 +28,7 @@ exports.defaultAddonManifest = {
   configVars: 'TEST_URL',
   password: 'pass',
   ssoSalt: 'sso salt',
-  url: 'http://testprovider.com',
+  url: 'http://fakeaddon.provider.com/heroku/resources',
   ssoUrl: 'http://testprovider.com/ssourl'
 };
 
