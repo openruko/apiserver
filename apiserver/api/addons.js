@@ -46,14 +46,14 @@ module.exports = {
       var providerUrl = addonInfo.provider_url;
       console.log("Requesting resource from " + providerUrl);
 
-      // TODO: see how to set timeout, default value is too long.
       request({
         method: 'POST',
         json: true,
         url: providerUrl,
         headers : {
           "Authorization" : providerAuth
-        }
+        },
+        timeout: 1000  //1s
       }, function(err, result) {
         if(err) {
           cb({ error: 'unable to request resource from provider server', friendly: true})
