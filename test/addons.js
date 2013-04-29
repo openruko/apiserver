@@ -75,15 +75,13 @@ describe('Addons API', function(){
   describe('add without registered addons', function(){
     beforeEach(common.addApp);
     it('should return not found', function(done){
-      request({
-        url: base + '/apps/myApp/addons/fakeaddon',
-        method: 'POST'
-      }, function(err, res, body){
-        if(err) return done(err);
-        expect(res).to.have.status(404);
-        expect(body.error).to.be.equal('Addon not found.');
-        done();
-      });
+      common.addAddonOnApp('fakeaddon',
+        function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(404);
+          expect(body.error).to.be.equal('Addon not found.');
+          done();
+        });
     })
   });
 
@@ -91,79 +89,67 @@ describe('Addons API', function(){
     beforeEach(common.addAddon);
     beforeEach(common.addApp);
     it('should validate if plan is informed', function(done){
-      request({
-        url: base + '/apps/myApp/addons/fakeaddon',
-        method: 'POST'
-      }, function(err, res, body){
-        if(err) return done(err);
-        expect(res).to.have.status(404);
-        expect(body.error).to.be.equal('Addon plan not found.');
-        done();
-      });
+      common.addAddonOnApp('fakeaddon',
+        function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(404);
+          expect(body.error).to.be.equal('Addon plan not found.');
+          done();
+        });
     })
 
     it('should validate if url provider is unavailable', function(done){
-      request({
-        url: base + '/apps/myApp/addons/fakeaddon:test',
-        method: 'POST'
-      }, function(err, res, body){
-        if(err) return done(err);
-        expect(res).to.have.status(404);
-        expect(body.error).to.be.equal('unable to request resource from provider server');
-        done();
-      });
+      common.addAddonOnApp('fakeaddon:test',
+        function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(404);
+          expect(body.error).to.be.equal('unable to request resource from provider server');
+          done();
+        });
     })
 
     it('should validate provider config vars', function(done){
       var fakeBody = {id: 'fakeaddon', config: {'INVALID_CONFIG_VAR': 'mysql:fakeurl'}};
       mockProviderRequest(fakeBody);
 
-      request({
-        url: base + '/apps/myApp/addons/fakeaddon:test',
-        method: 'POST'
-      }, function(err, res, body){
-        if(err) return done(err);
-        expect(res).to.have.status(422);
-        expect(body.error).to.be.equal('invalid resource from provider server');
-        done();
-      });
+      common.addAddonOnApp('fakeaddon:test',
+        function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(422);
+          expect(body.error).to.be.equal('invalid resource from provider server');
+          done();
+        });
     })
 
     it('should be successful', function(done){
       mockProviderRequest(defaultFakeBody);
 
-      request({
-        url: base + '/apps/myApp/addons/fakeaddon:test',
-        method: 'POST'
-      }, function(err, res, body){
-        if(err) return done(err);
-        expect(res).to.have.status(200);
-        expect(body.status).to.be.equal('Installed');
-        expect(body.message).to.be.equal('Welcome! Thanks for using fakeaddon');
-        expect(body.price).to.be.equal('free');
-        done();
-      });
+      common.addAddonOnApp('fakeaddon:test',
+        function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(200);
+          expect(body.status).to.be.equal('Installed');
+          expect(body.message).to.be.equal('Welcome! Thanks for using fakeaddon');
+          expect(body.price).to.be.equal('free');
+          done();
+        });
     })
 
     it('should validate if app already contain addon', function(done){
       mockProviderRequest(defaultFakeBody);
-      request({
-        url: base + '/apps/myApp/addons/fakeaddon:test',
-        method: 'POST'
-      }, function(err, res, body){
-        if(err) return done(err);
-        expect(res).to.have.status(200);
-
-        request({
-          url: base + '/apps/myApp/addons/fakeaddon:test',
-          method: 'POST'
-        }, function(err, res, body){
+      common.addAddonOnApp('fakeaddon:test',
+        function(err, res, body){
           if(err) return done(err);
-          expect(res).to.have.status(422);
-          expect(body.error).to.be.equal('app already contain fakeaddon addon.');
-          done();
+          expect(res).to.have.status(200);
+
+          common.addAddonOnApp('fakeaddon:test',
+            function(err, res, body){
+              if(err) return done(err);
+              expect(res).to.have.status(422);
+              expect(body.error).to.be.equal('app already contain fakeaddon addon.');
+              done();
+            });
         });
-      });
     })
 
   });

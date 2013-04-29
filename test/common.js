@@ -86,6 +86,10 @@ exports.addApp = function(cb){
   }, cb);
 };
 
+exports.addAddonOnApp = function(addonName, cb){
+  request({url: base + '/apps/myApp/addons/' + addonName, method: 'POST'}, cb);
+};
+
 exports.addConfig = function(cb){
   request.put({
     url: base + '/apps/myApp/config_vars',
