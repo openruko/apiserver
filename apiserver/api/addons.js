@@ -70,8 +70,9 @@ module.exports = {
         }
 
         var installParams = self.requestPayload;
-        installParams.envVars = {};
-        installParams.envVars[addonInfo.config_vars] = resourceUrl;
+        installParams.resourceId = result.body.id;
+        installParams.resourceVars = {};
+        installParams.resourceVars[addonInfo.config_vars] = resourceUrl;
 
         self.db.exec('installAddon', installParams, function(dbError, dbResult) {
           if(dbError) return cb(dbError);

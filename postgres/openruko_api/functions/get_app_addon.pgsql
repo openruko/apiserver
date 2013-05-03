@@ -36,7 +36,7 @@ BEGIN
   END IF;
 
   -- check if last release already have addon installed
-  SELECT release.addons @> ARRAY[v_addon_name] AS contain_addon
+  SELECT release.addons @> ARRAY[p_addon_name] AS contain_addon
     FROM release
    WHERE release.app_id = p_app_id
   ORDER BY id DESC LIMIT 1
