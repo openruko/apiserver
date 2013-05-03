@@ -5,7 +5,7 @@ $BODY$
 DECLARE
 BEGIN
 
-  RETURN QUERY SELECT a.addon_id || ':' || p.plan_id AS name,
+  RETURN QUERY SELECT a.name || ':' || p.name AS name,
                       p.description,
                       a.url,
                       a.state,

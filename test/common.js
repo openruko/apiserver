@@ -24,7 +24,7 @@ exports.defaultKey = {
 };
 
 exports.defaultAddonManifest = {
-  addonId: 'fakeaddon',
+  addonName: 'fakeaddon',
   configVars: 'TEST_URL',
   password: 'pass',
   ssoSalt: 'sso salt',

@@ -38,11 +38,11 @@ module.exports = {
       var addonInfo = this.responsePayload.rows[0];
 
       if (addonInfo.contain_addon) {
-        var msg = 'app already contain ' + addonInfo.addon_id + ' addon.';
+        var msg = 'app already contain ' + addonInfo.name + ' addon.';
         return cb({ error: msg, code: 422, friendly: true });
       }
 
-      var providerAuth = "Basic " + new Buffer(addonInfo.addon_id + ':' + addonInfo.password).toString("base64");
+      var providerAuth = "Basic " + new Buffer(addonInfo.name + ':' + addonInfo.password).toString("base64");
       var providerUrl = addonInfo.provider_url;
       console.log("Requesting resource from " + providerUrl);
 
@@ -79,7 +79,7 @@ module.exports = {
 
         self.responsePayload = {
           "status": "Installed",
-          "message": "Welcome! Thanks for using " + addonInfo.addon_id,
+          "message": "Welcome! Thanks for using " + addonInfo.name,
           "price": "free"
         }
         cb();
