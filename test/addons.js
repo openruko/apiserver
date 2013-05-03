@@ -27,13 +27,22 @@ Assertion.addProperty('addon', function () {
 });
 
 
-var defaultFakeBody = {id: 'fakeaddon', config: {'TEST_URL': 'mysql:fakeurl'}};
+var defaultFakeBody = {id: 'FAKEUUID', config: {'TEST_URL': 'mysql:fakeurl'}};
+
 var mockProviderRequest = function(fakeBody){
   var providerAuth = "Basic " + new Buffer("fakeaddon:pass").toString("base64");
   var providerScope = nock('http://fakeaddon.provider.com')
     .matchHeader('Authorization', providerAuth)
     .post('/heroku/resources')
     .reply(201, fakeBody);
+}
+
+var mockProviderDelete = function(fakeBody){
+  var providerAuth = "Basic " + new Buffer("fakeaddon:pass").toString("base64");
+  var providerScope = nock('http://fakeaddon.provider.com')
+    .matchHeader('Authorization', providerAuth)
+    .delete('/heroku/resources/' + fakeBody.id)
+    .reply(200, fakeBody);
 }
 
 before(common.startServer);
@@ -152,6 +161,54 @@ describe('Addons API', function(){
         });
     })
 
+  });
+
+  describe('remove unregistered addon', function(){
+    beforeEach(common.addApp);
+    it('should return not found', function(done){
+      common.removeAddonOnApp('fakeaddon:test',
+        function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(404);
+          expect(body.error).to.be.equal('Addon not found.');
+          done();
+        });
+    })
+  });
+
+  describe('remove non existent addon', function(){
+    beforeEach(common.addAddon);
+    beforeEach(common.addApp);
+    it('should return not found', function(done){
+      common.removeAddonOnApp('fakeaddon:test',
+        function(err, res, body){
+          if(err) return done(err);
+          expect(res).to.have.status(404);
+          expect(body.error).to.be.equal('Addon not found on myApp');
+          done();
+        });
+    })
+  });
+
+  describe('remove should be succesful', function(){
+    beforeEach(common.addAddon);
+    beforeEach(common.addApp);
+    it('should return ok', function(done){
+      mockProviderRequest(defaultFakeBody);
+      common.addAddonOnApp('fakeaddon:test',
+        function(err, res, body){
+          mockProviderDelete(defaultFakeBody);
+          common.removeAddonOnApp('fakeaddon:test',
+            function(err, res, body){
+              if(err) return done(err);
+              expect(res).to.have.status(200);
+              expect(body.status).to.be.equal('Uninstalled');
+              expect(body.message).to.be.null;
+              expect(body.price).to.be.equal('free');
+              done();
+            });
+        });
+    })
   });
 
 });

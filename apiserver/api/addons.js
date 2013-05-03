@@ -88,5 +88,54 @@ module.exports = {
     },
     okayCode: 200,
     errorCode: 404
-  }
+  },
+  removeAddon: {
+      alternativePgFunction: 'getAppAddon',
+      routePath: '/apps/:appName/addons/:addonName',
+      payloadSource: 'params',
+      method: 'DELETE',
+      after: function(cb) {
+        var self = this;
+        var addonInfo = this.responsePayload.rows[0];
+
+        if (!addonInfo.contain_addon) {
+          var msg = 'Addon not found on ' + self.requestPayload.appName;
+          return cb({ error: msg, code: 404, friendly: true });
+        }
+
+        var providerAuth = "Basic " + new Buffer(addonInfo.name + ':' + addonInfo.password).toString("base64");
+        var providerUrl = addonInfo.provider_url;
+        providerUrl += "/" + addonInfo.resource_id;
+
+        console.log("Removing resource from " + providerUrl);
+
+        request({
+          method: 'DELETE',
+          json: true,
+          url: providerUrl,
+          headers : {
+            "Authorization" : providerAuth
+          },
+          timeout: 1000  //1s
+        }, function(err, result) {
+          if(err) {
+            cb({ error: 'unable to request resource from provider server', friendly: true})
+            return;
+          }
+
+          self.db.exec('removeAddon', self.requestPayload, function(dbError, dbResult) {
+            if(dbError) return cb(dbError);
+          });
+
+          self.responsePayload = {
+            "status": "Uninstalled",
+            "message": null,
+            "price": "free"
+          }
+          cb();
+        });
+      },
+      okayCode: 200,
+      errorCode: 404
+    }
 };

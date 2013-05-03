@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION get_app_addon
 (p_app_id integer, p_addon_name text)
-RETURNS TABLE(name text, config_vars text, password text,
+RETURNS TABLE(name text, resource_id text, config_vars text, password text,
               provider_url text, plan_price integer, contain_addon boolean) AS
 $BODY$
 DECLARE
@@ -10,6 +10,7 @@ DECLARE
   v_row_addon addon%rowtype;
   v_row_addon_plan addon_plan%rowtype;
   v_last_release_contain_addon boolean;
+  v_resource_id text;
 BEGIN
 
   v_array_temp = string_to_array(p_addon_name, ':');
@@ -42,7 +43,16 @@ BEGIN
   ORDER BY id DESC LIMIT 1
     INTO v_last_release_contain_addon;
 
+  -- get app addon-on info
+  SELECT app_addon.resource_id
+    FROM app_addon
+   WHERE app_addon.app_id = p_app_id
+     AND app_addon.addon_id = v_row_addon_plan.addon_id
+     AND app_addon.plan_id = v_row_addon_plan.id
+    INTO v_resource_id;
+
   RETURN QUERY SELECT v_row_addon.name AS name,
+                      v_resource_id AS resource_id,
                       v_row_addon.config_vars AS config_vars,
                       v_row_addon.password AS password,
                       v_row_addon.url AS provider_url,

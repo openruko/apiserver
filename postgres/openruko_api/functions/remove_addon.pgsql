@@ -1,6 +1,5 @@
-CREATE OR REPLACE FUNCTION install_addon
-(p_user_id integer, p_app_id integer, p_addon_name text,
- p_resource_id text, p_resource_vars hstore)
+CREATE OR REPLACE FUNCTION remove_addon
+(p_user_id integer, p_app_id integer, p_addon_name text)
 RETURNS SETOF release AS
 $BODY$
 DECLARE
@@ -9,6 +8,7 @@ DECLARE
   v_addon_plan text;
   v_addon_id integer;
   v_addon_plan_id integer;
+  v_key_to_remove text;
   v_new_addons text[];
   v_last_release release%rowtype;
   v_existing_env_vars hstore;
@@ -42,13 +42,29 @@ BEGIN
        AND plan_id = v_addon_plan_id)
     INTO v_already_exists;
 
-  IF v_already_exists THEN
-    RAISE EXCEPTION 'Addon already installed.';
+  IF NOT v_already_exists THEN
+    RAISE EXCEPTION 'Addon not installed.';
   END IF;
 
-  -- save addon resource info
-  INSERT INTO app_addon(app_id, addon_id, plan_id, resource_id, resource_vars)
-    VALUES (p_app_id, v_addon_id, v_addon_plan_id, p_resource_id, p_resource_vars);
+  -- get key from addon
+  SELECT config_vars from addon WHERE name = v_addon_name
+    INTO v_key_to_remove;
+
+  -- get last release
+  SELECT * FROM release WHERE app_id = p_app_id
+    ORDER BY id DESC LIMIT 1 INTO v_last_release;
+
+  v_existing_env_vars := v_last_release.env;
+
+  -- delete key from new vars
+  v_new_env_vars := delete(coalesce(v_existing_env_vars::hstore,
+     hstore(array[]::varchar[])), v_key_to_remove);
+
+  -- delete add-on from app_addon
+  DELETE FROM app_addon
+   WHERE app_id = p_app_id
+     AND addon_id = v_addon_id
+     AND plan_id = v_addon_plan_id;
 
   -- aggregate installed addons as array
   SELECT array_agg(installed_addons.name) FROM
@@ -59,17 +75,9 @@ BEGIN
         AND aa.plan_id = p.id) AS installed_addons
     INTO v_new_addons;
 
-  -- get last release
-  SELECT * FROM release WHERE app_id = p_app_id
-    ORDER BY id DESC LIMIT 1 INTO v_last_release;
-
-  v_existing_env_vars := v_last_release.env;
-
-  -- merge the env with those in last release, new take priority
-  v_new_env_vars := coalesce(v_existing_env_vars,  hstore(array[]::varchar[])) || p_resource_vars;
+  v_new_descr := 'Remove ' || p_addon_name || ' add-on';
 
   SELECT * FROM oruser WHERE id = p_user_id INTO v_user;
-  v_new_descr := 'Add ' || p_addon_name || ' add-on';
 
   -- store the new release, we never overwrite previous releases
   PERFORM create_release(p_app_id, v_user.email, v_new_descr, v_last_release.commit,
