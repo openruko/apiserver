@@ -23,6 +23,15 @@ exports.defaultKey = {
   fingerprint: '6cbcf7c2b4703cd2b49b2c49878c403e'
 };
 
+exports.defaultAddonManifest = {
+  addonName: 'fakeaddon',
+  configVars: 'TEST_URL',
+  password: 'pass',
+  ssoSalt: 'sso salt',
+  url: 'http://fakeaddon.provider.com/heroku/resources',
+  ssoUrl: 'http://testprovider.com/ssourl'
+};
+
 var app;
 exports.startServer = function(cb){
   if(app) return cb();
@@ -77,6 +86,14 @@ exports.addApp = function(cb){
   }, cb);
 };
 
+exports.addAddonOnApp = function(addonName, cb){
+  request({url: base + '/apps/myApp/addons/' + addonName, method: 'POST'}, cb);
+};
+
+exports.removeAddonOnApp = function(addonName, cb){
+  request({url: base + '/apps/myApp/addons/' + addonName, method: 'DELETE'}, cb);
+};
+
 exports.addConfig = function(cb){
   request.put({
     url: base + '/apps/myApp/config_vars',
@@ -86,4 +103,25 @@ exports.addConfig = function(cb){
     }),
     json: false
   }, cb);
+};
+
+exports.getUserByApiKey = function(apiKey, cb) {
+  app.db.exec('authenticateUserByApiKey', {apiKey: apiKey }, function(err, results){
+    if(err) return cb(err);
+    cb(null, results.rows[0]);
+  });
+};
+
+exports.addAddon = function(cb){
+  // Note: this is the only way that i found to get user id. :X
+  exports.getUserByApiKey(exports.defaultUser.apiKey,
+  function(err, user){
+    var addonManifest = exports.defaultAddonManifest;
+    addonManifest.userId = user.id;
+
+    app.db.exec('addProviderAddon', addonManifest, function(err, results){
+      if(err) return cb(err);
+      cb(null, results.rows[0]);
+    });
+  });
 };
