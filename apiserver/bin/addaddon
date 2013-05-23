@@ -1,0 +1,2 @@
+# Temporary workaround to make easy, installing add-on
+psql -c "SET search_path TO openruko_api, openruko_data, public; select * from openruko_api.add_provider_addon(1, 'mysql_addon', 'MYSQL_ADDON_DATABASE_URL', 'cYtNZBNXS9A0ds3z', 'ssosalt', 'http://mysql.provider.com:6661/heroku/resources', 'http://ssourl.com');" openruko
