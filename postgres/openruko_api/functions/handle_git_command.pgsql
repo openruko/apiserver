@@ -26,14 +26,14 @@ BEGIN
   
   v_base_protocol = '{{BASE_PROTOCOL}}';
 
-  v_mounts = hstore('/app','s3get://' || v_bucket || '/repos/' || p_app_id || '.tgz');
+  v_mounts = hstore('/tmp/repo','s3get://' || v_bucket || '/repos/' || p_app_id || '.tgz');
 
   v_mounts = v_mounts || hstore('/tmp/buildpacks','file://buildpacks.tgz');
 
   v_dyno_id = generate_uuid();
   v_rez_id = generate_uuid();
   
-  v_command_args = array['/app'];
+  v_command_args = array['/tmp/repo/'];
 
   v_env_vars = hstore('repo_put_url', 's3put://' || v_bucket || '/repos/' || p_app_id || '.tgz');
 
