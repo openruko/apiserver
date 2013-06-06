@@ -28,9 +28,8 @@ module.exports = {
       var yamlBody = this.requestPayload.body;
       var payload = yaml.load(yamlBody);
 
-
       this.requestPayload.addons = payload.addons;
-      this.requestPayload.envVars = payload.config_vars;
+      this.requestPayload.envVars = payload.config_vars || {};
       this.requestPayload.pstable = payload.pstable;
       this.requestPayload.commit = payload.commit;
       this.requestPayload.slugId = payload.slug_id.toString();
