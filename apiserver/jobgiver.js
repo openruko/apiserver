@@ -83,11 +83,11 @@ var signer = slugSigner.createSigner(conf.s3.bucket);
 
 var s3regex = new RegExp("^s3([a-z]*)://([a-zA-Z0-9-]*)(/([a-zA-Z0-9.-_]*))+$",'i');
 
-var processMount = function(mountUrl) {
+var processMount = function(mountUrl, protocol, host) {
 
   mountUrl = mountUrl.replace('{{S3_BUCKET}}', conf.s3.bucket);
-  mountUrl = mountUrl.replace('{{BASE_PROTOCOL}}', conf.apiserver.protocol);
-  mountUrl = mountUrl.replace('{{BASE_HOST}}', conf.apiserver.hostname + ':' + conf.apiserver.port);
+  mountUrl = mountUrl.replace('{{BASE_PROTOCOL}}', protocol);
+  mountUrl = mountUrl.replace('{{BASE_HOST}}', host);
   
   var s3match = mountUrl.match(s3regex);
 
@@ -106,22 +106,6 @@ tasks.populateJobsOutstanding = function(callback) {
   self.jobsOutstanding.kill = [];
   dbfacade.exec('getJobsOutstanding', {}, function(err, result) {
     if(err) return callback(err);
-
-    result.rows.forEach(function(row){
-      row.env_vars = hstore.parse(row.env_vars ) || {};
-      row.mounts = hstore.parse(row.mounts) || {};
-
-      //sign slug urls
-      _(row.mounts).forEach(function(mountValue, mountKey){
-        if(!mountValue) return
-        row.mounts[mountKey] = processMount(mountValue);
-      });
-
-      _(row.env_vars).forEach(function(mountValue, mountKey){
-        if(!mountValue) return
-        row.env_vars[mountKey] = processMount(mountValue);
-      });
-    });
 
     result.rows.filter(function(row) {
       return row.next_action === 'start';
@@ -148,7 +132,6 @@ tasks.distributeTasksOutstanding = function(cb) {
     var leastBurdenedHost = _.min(self.awaitingAssignment,function(host) {
       return host.runningDynos;
     });
-
 
     if(leastBurdenedHost) {
 
@@ -181,6 +164,26 @@ tasks.distributeTasksOutstanding = function(cb) {
   });
 
   self.awaitingAssignment.forEach(function(awHost) {
+    var req  = awHost.raw.req;
+    var host = req.header("host");
+    var protocol = req.protocol;
+    
+    _(awHost.tasks).forEach(function(task){
+      task.env_vars = hstore.parse(task.env_vars ) || {};
+      task.mounts = hstore.parse(task.mounts) || {};
+
+      //sign slug urls
+      _(task.mounts).forEach(function(mountValue, mountKey){
+        if(!mountValue) return
+        task.mounts[mountKey] = processMount(mountValue, protocol, host);
+      });
+
+      _(task.env_vars).forEach(function(mountValue, mountKey){
+        if(!mountValue) return
+        task.env_vars[mountKey] = processMount(mountValue, protocol, host);
+      });
+    });
+    
     awHost.raw.res.send(awHost.tasks);
     self.awaitingAssignment.splice(self.awaitingAssignment.indexOf(awHost),1);
     self.assignedHosts.push(awHost);
