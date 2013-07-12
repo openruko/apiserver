@@ -6,6 +6,7 @@ DECLARE
   v_already_exists boolean;
   v_app_id integer;
   v_base_domain text;
+  v_git_host text;
   v_web_url text;
   v_git_url text;
   v_user oruser%ROWTYPE;
@@ -31,8 +32,9 @@ BEGIN
 
   v_base_domain := COALESCE((SELECT value FROM settings WHERE key='base_domain'),'mymachine.me');
   v_web_url := 'http://'::text || p_name::text || '.'::text || v_base_domain::text || '/';
-  v_git_url := 'git@'::text || v_base_domain::text || ':'::text || p_name::text || '.git'::text;
-
+  
+  v_git_host := COALESCE((SELECT value FROM settings WHERE key='git_host'),'mymachine.me');
+  v_git_url := 'git@'::text || v_git_host::text || ':'::text || p_name::text || '.git'::text;
 
   INSERT INTO app (name, user_id, stack, web_url, git_url, create_status, dynos, workers, 
       created_at, slugsize, reposize, buildpack_provided_description)
